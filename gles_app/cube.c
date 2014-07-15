@@ -248,8 +248,8 @@ int main(
     eglMakeCurrent(sEGLDisplay, sEGLSurface, sEGLSurface, sEGLContext);
 
     /* Shader Initialisation */
-    process_shader(&uiVertShader, "C:\\cygwin\\home\\richard\\dev\\gles_test\\shader.vert", GL_VERTEX_SHADER);
-    process_shader(&uiFragShader, "C:\\cygwin\\home\\richard\\dev\\gles_test\\shader.frag", GL_FRAGMENT_SHADER);
+    process_shader(&uiVertShader, "C:\\cygwin\\home\\richard\\dev\\gles_app\\gles_app\\shader.vert", GL_VERTEX_SHADER);
+    process_shader(&uiFragShader, "C:\\cygwin\\home\\richard\\dev\\gles_app\\gles_app\\shader.frag", GL_FRAGMENT_SHADER);
 
     /* Create uiProgram (ready to attach shaders) */
     uiProgram = glCreateProgram();
