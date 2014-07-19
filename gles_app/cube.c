@@ -19,15 +19,22 @@
 HWND hWindow;
 HDC  hDisplay;
 
+const unsigned short aIndices[] =
+{
+    0, 2, 1,
+    0, 3, 2
+};
+
 /* 3D data. Vertex range -0.5..0.5 in all axes.
 * Z -0.5 is near, 0.5 is far. */
 const float aVertices[] =
 {
     /* Front face. */
     /* Bottom left */
-    0.1,  0.3, 0,
-    0.5, 0, 0,
-    0, 0, 0,
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
     /* Top right */
     0,  0.5, 0,
     0.5,  0.5, 0,
@@ -292,7 +299,7 @@ int main(
     glLinkProgram(uiProgram);
 
     /* Get attribute locations of non-fixed attributes like colour and texture coordinates. */
-    iLocPosition = glGetAttribLocation(uiProgram, "av4position");
+    iLocPosition = glGetAttribLocation(uiProgram, "pos");
     if(iLocPosition == -1)
     {
         goto cleanup;
@@ -318,7 +325,7 @@ int main(
     glEnableVertexAttribArray(iLocColour);
 
     /* Populate attributes for position, colour and texture coordinates etc. */
-    glVertexAttribPointer(iLocPosition, 3, GL_FLOAT, GL_FALSE, 0, aVertices);
+    glVertexAttribPointer(iLocPosition, 2, GL_FLOAT, GL_FALSE, 0, aVertices);
     glVertexAttribPointer(iLocColour, 3, GL_FLOAT, GL_FALSE, 0, aColours);
 
     glEnable(GL_BLEND);
@@ -421,7 +428,12 @@ int main(
 #endif
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+#if 0
         glDrawArrays(GL_TRIANGLES, 0, 6);
+#else
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &aIndices[0]);
+#endif
+          
 
         if(!eglSwapBuffers(sEGLDisplay, sEGLSurface)) 
         {
