@@ -25,13 +25,13 @@ const float aVertices[] =
 {
     /* Front face. */
     /* Bottom left */
-    -0.5,  0.5, -0.5,
-    0.5, -0.5, -0.5,
-    -0.5, -0.5, -0.5,
+    0.1,  0.3, 0,
+    0.5, 0, 0,
+    0, 0, 0,
     /* Top right */
-    -0.5,  0.5, -0.5,
-    0.5,  0.5, -0.5,
-    0.5, -0.5, -0.5,
+    0,  0.5, 0,
+    0.5,  0.5, 0,
+    0.5, 0, 0,
     /* Left face */
     /* Bottom left */
     -0.5,  0.5,  0.5,
@@ -138,6 +138,36 @@ const float aColours[] =
 };
 
 
+void ortho_matrix(
+    float left,
+    float right, 
+    float bottom, 
+    float top,
+    float matrix[16]
+    )
+{
+    float f = 1.0f; 
+    float n = -1.0f; 
+
+
+    memset(matrix, 0, sizeof(float) * 16); 
+
+    // Setup identify matrix.
+    matrix[0*4 + 0] = 1; 
+    matrix[1*4 + 1] = 1; 
+    matrix[2*4 + 2] = 1; 
+    matrix[3*4 + 3] = 1; 
+
+    // Setup ortho matrix. 
+    matrix[0*4 + 0] = 2.0f / (right - left); 
+    matrix[1*4 + 1] = 2.0f / (top - bottom); 
+    matrix[2*4 + 2] = -2.0f / (f - n); 
+    matrix[3*4 + 0] = - (right + left) / (right - left); 
+    matrix[3*4 + 1] = - (top + bottom) / (top - bottom); 
+    matrix[3*4 + 2] = - (f + n) / (f - n); 
+}
+
+
 int main(
     int     argc,
     char  **argv
@@ -146,6 +176,8 @@ int main(
     EGLDisplay	sEGLDisplay;
     EGLContext	sEGLContext;
     EGLSurface	sEGLSurface;
+    GLuint      textureId;
+    unsigned char artificial_texture[400*400*4];
 
 
     /* EGL Configuration */
@@ -202,7 +234,7 @@ int main(
     unsigned char *myPixels = calloc(1, 128*128*4); // Holds texture data.
     unsigned char *myPixels2 = calloc(1, 128*128*4); // Holds texture data.
 
-    float aRotate[16], aModelView[16], aPerspective[16], aMVP[16];
+    float aRotate[16], aModelView[16], aPerspective[16], aMVP[16], projection_matrix[16];
 
     int i;
 
@@ -289,8 +321,50 @@ int main(
     glVertexAttribPointer(iLocPosition, 3, GL_FLOAT, GL_FALSE, 0, aVertices);
     glVertexAttribPointer(iLocColour, 3, GL_FLOAT, GL_FALSE, 0, aColours);
 
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    // set glTexParameteri
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    // Load texture.
+    glGenTextures(1, &textureId); 
+    if(textureId == 0)
+    {
+        goto cleanup;
+    }
+
+    // -------------------
+    //  Setup texture
+    // -------------------
+
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
+
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+    for(i = 0; i < 400*400; i += 4)
+    {
+        artificial_texture[i    ] = i; 
+        artificial_texture[i + 1] = i; 
+        artificial_texture[i + 2] = i; 
+        artificial_texture[i + 3] = 255; 
+    }
+
+    glTexImage2D(GL_TEXTURE_2D,
+                 0, 
+                 (GLint) GL_RGBA, 
+                 (GLsizei) 400, 
+                 (GLsizei) 400, 
+                 0, 
+                 GL_RGBA, 
+                 GL_UNSIGNED_BYTE,
+                 artificial_texture); 
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     /* Enter event loop */
     while(!bDone) 
@@ -308,6 +382,7 @@ int main(
             }
         }
 
+#if 0
         /* 
         * Do some rotation with Euler angles. It is not a fixed axis as
         * quaterions would be, but the effect is cool. 
@@ -326,9 +401,13 @@ int main(
 
         perspective_matrix(45.0, (double)uiWidth/(double)uiHeight, 0.01, 100.0, aPerspective);
         multiply_matrix(aPerspective, aModelView, aMVP);
+#endif
 
-        GL_CHECK(glUniformMatrix4fv(iLocMVP, 1, GL_FALSE, aMVP));
+        // perspective_matrix(45.0, (double)uiWidth/(double)uiHeight, 0.01, 100.0, aPerspective);
+        ortho_matrix(0, 2, 2, 0, aPerspective); 
+        glUniformMatrix4fv(iLocMVP, 1, GL_FALSE, aPerspective);
 
+#if 1
         iXangle += 3;
         iYangle += 2;
         iZangle += 1;
@@ -339,9 +418,10 @@ int main(
         if(iYangle < 0) iYangle += 360;
         if(iZangle >= 360) iZangle -= 360;
         if(iZangle < 0) iZangle += 360;
+#endif
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         if(!eglSwapBuffers(sEGLDisplay, sEGLSurface)) 
         {

@@ -1,9 +1,43 @@
-﻿Build started 7/6/2014 10:22:19 AM.
-     1>Project "c:\Users\richard\documents\visual studio 2010\Projects\gles_app\gles_app\gles_app.vcxproj" on node 2 (clean target(s)).
-     1>_PrepareForClean:
-         Deleting file "Debug\gles_app.lastbuildstate".
-     1>Done Building Project "c:\Users\richard\documents\visual studio 2010\Projects\gles_app\gles_app\gles_app.vcxproj" (clean target(s)).
+﻿Build started 7/18/2014 9:17:34 PM.
+     1>Project "C:\cygwin\home\richard\dev\gles_app\gles_app\gles_app.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\gles_app.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\ARM\Mali Developer Tools\OpenGL ES Emulator v1.3.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt cube.c
+         cube.c
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(28): warning C4305: 'initializing' : truncation from 'double' to 'const float'
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(28): warning C4305: 'initializing' : truncation from 'double' to 'const float'
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(237): warning C4101: 'aMVP' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(230): warning C4101: 'aTBNmatrix2' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(221): warning C4101: 'myTex2' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(217): warning C4101: 'iLocSampler2' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(230): warning C4101: 'aTBNmatrix1' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(216): warning C4101: 'iLocZangle' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(221): warning C4101: 'myTex' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(216): warning C4101: 'iLocYangle' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(215): warning C4101: 'iLocTexCoord' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(237): warning C4101: 'aRotate' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(237): warning C4101: 'projection_matrix' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(237): warning C4101: 'aModelView' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(217): warning C4101: 'iLocAspect' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(216): warning C4101: 'iLocXangle' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(217): warning C4101: 'iLocSampler' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(217): warning C4101: 'iLocLightPos' : unreferenced local variable
+     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(215): warning C4101: 'iLocNormal' : unreferenced local variable
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Program Files (x86)\ARM\Mali Developer Tools\OpenGL ES Emulator v1.3.0\lib" libEGL.lib libGLESv1_CM.lib libGLESv2.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\gles_app.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.lib" /MACHINE:X86 Debug\cube.obj
+         Debug\matrix.obj
+         Debug\shader.obj
+         Debug\window.obj
+     1>cube.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+         gles_app.vcxproj -> C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.exe;#1" /manifest Debug\gles_app.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\gles_app.unsuccessfulbuild".
+         Touching "Debug\gles_app.lastbuildstate".
+     1>Done Building Project "C:\cygwin\home\richard\dev\gles_app\gles_app\gles_app.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.29
+Time Elapsed 00:00:09.64
