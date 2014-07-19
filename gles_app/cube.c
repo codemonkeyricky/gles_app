@@ -19,6 +19,14 @@
 HWND hWindow;
 HDC  hDisplay;
 
+const unsigned short aTexCoords[] =
+{
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0
+};
+
 const unsigned short aIndices[] =
 {
     0, 2, 1,
@@ -299,7 +307,7 @@ int main(
     glLinkProgram(uiProgram);
 
     /* Get attribute locations of non-fixed attributes like colour and texture coordinates. */
-    iLocPosition = glGetAttribLocation(uiProgram, "pos");
+    iLocPosition = glGetAttribLocation(uiProgram, "mPosition");
     if(iLocPosition == -1)
     {
         goto cleanup;

@@ -8,16 +8,22 @@
  * by a licensing agreement from ARM Limited.
  */
 
-attribute vec2 pos;
+attribute vec2 mPosition;
+attribute vec2 mTexCoords;
 attribute vec3 av3colour;
 
 uniform mat4 mvp;
 
 varying vec3 vv3colour;
+varying vec2 texCoords; 
 
 void main() 
 {
+    // Set vertex output. 
+	gl_Position = mvp * vec4(mPosition, 0.0, 1.0);
+
+    // Set varyings. 
 	vv3colour 	= av3colour;
-	gl_Position = mvp * vec4(pos, 0.0, 1.0);
+    texCoords   = vec2(mTexCoords.x, mTexCoords.y); 
 }
 
