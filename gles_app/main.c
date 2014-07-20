@@ -1,8 +1,8 @@
 
-#include "cube.h"
+#include <stdlib.h>
+
 #include "shader.h"
 #include "window.h"
-#include "matrix.h"
 
 #include "GLES2/gl2.h"
 #include "EGL/egl.h"
@@ -158,10 +158,10 @@ int main(
     hWindow = create_window(uiWidth, uiHeight);
 
     // Create surface based on window and display.
-    sEGLSurface = EGL_CHECK(eglCreateWindowSurface(sEGLDisplay,
+    sEGLSurface = eglCreateWindowSurface(sEGLDisplay,
                                                    aEGLConfigs[0],
                                                    (EGLNativeWindowType) hWindow,
-                                                   NULL));
+                                                   NULL);
     if(sEGLSurface == EGL_NO_SURFACE) 
     {
         printf("Failed to create EGL surface.\n");
@@ -307,16 +307,16 @@ int main(
 
 cleanup:
     /* Cleanup shaders */
-    GL_CHECK(glUseProgram(0));
-    GL_CHECK(glDeleteShader(uiVertShader));
-    GL_CHECK(glDeleteShader(uiFragShader));
-    GL_CHECK(glDeleteProgram(uiProgram));
+    glUseProgram(0);
+    glDeleteShader(uiVertShader);
+    glDeleteShader(uiFragShader);
+    glDeleteProgram(uiProgram);
 
     /* EGL clean up */
-    EGL_CHECK(eglMakeCurrent(sEGLDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT));
-    EGL_CHECK(eglDestroySurface(sEGLDisplay, sEGLSurface));
-    EGL_CHECK(eglDestroyContext(sEGLDisplay, sEGLContext));
-    EGL_CHECK(eglTerminate(sEGLDisplay));
+    eglMakeCurrent(sEGLDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglDestroySurface(sEGLDisplay, sEGLSurface);
+    eglDestroyContext(sEGLDisplay, sEGLContext);
+    eglTerminate(sEGLDisplay);
 
     return 0;
 }
