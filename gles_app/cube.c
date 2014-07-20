@@ -1,12 +1,3 @@
-/*
- * This proprietary software may be used only as
- * authorised by a licensing agreement from ARM Limited
- * (C) COPYRIGHT 2009 - 2011 ARM Limited
- * ALL RIGHTS RESERVED
- * The entire notice above must be reproduced on all authorised
- * copies and copies may only be made to the extent permitted
- * by a licensing agreement from ARM Limited.
- */
 
 #include "cube.h"
 #include "shader.h"
@@ -19,139 +10,35 @@
 HWND hWindow;
 HDC  hDisplay;
 
-const unsigned short aTexCoords[] =
+const float aTexCoords[] =
 {
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0
-};
-
-const unsigned short aIndices[] =
-{
-    0, 2, 1,
-    0, 3, 2
-};
-
-/* 3D data. Vertex range -0.5..0.5 in all axes.
-* Z -0.5 is near, 0.5 is far. */
-const float aVertices[] =
-{
-    /* Front face. */
-    /* Bottom left */
     0.0, 0.0,
     1.0, 0.0,
     1.0, 1.0,
     0.0, 1.0,
-    /* Top right */
-    0,  0.5, 0,
-    0.5,  0.5, 0,
-    0.5, 0, 0,
-    /* Left face */
-    /* Bottom left */
-    -0.5,  0.5,  0.5,
-    -0.5, -0.5, -0.5,
-    -0.5, -0.5,  0.5,
-    /* Top right */
-    -0.5,  0.5,  0.5,
-    -0.5,  0.5, -0.5,
-    -0.5, -0.5, -0.5,
-    /* Top face */
-    /* Bottom left */
-    -0.5,  0.5,  0.5,
-    0.5,  0.5, -0.5,
-    -0.5,  0.5, -0.5,
-    /* Top right */
-    -0.5,  0.5,  0.5,
-    0.5,  0.5,  0.5,
-    0.5,  0.5, -0.5,
-    /* Right face */
-    /* Bottom left */
-    0.5,  0.5, -0.5,
-    0.5, -0.5,  0.5,
-    0.5, -0.5, -0.5,
-    /* Top right */
-    0.5,  0.5, -0.5,
-    0.5,  0.5,  0.5,
-    0.5, -0.5,  0.5,
-    /* Back face */
-    /* Bottom left */
-    0.5,  0.5,  0.5,
-    -0.5, -0.5,  0.5,
-    0.5, -0.5,  0.5,
-    /* Top right */
-    0.5,  0.5,  0.5,
-    -0.5,  0.5,  0.5,
-    -0.5, -0.5,  0.5,
-    /* Bottom face */
-    /* Bottom left */
-    -0.5, -0.5, -0.5,
-    0.5, -0.5,  0.5,
-    -0.5, -0.5,  0.5,
-    /* Top right */
-    -0.5, -0.5, -0.5,
-    0.5, -0.5, -0.5,
-    0.5, -0.5,  0.5,
+};
+
+const unsigned short aIndices[] =
+{
+    0, 2, 1,    // Triangle 1
+    0, 3, 2     // Triangle 2
+};
+
+const float aVertices[] =
+{
+    0.0, 0.0,   // 0 
+    1.0, 0.0,   // 1
+    1.0, 1.0,   // 2
+    0.0, 1.0,   // 3
 };
 
 const float aColours[] =
 {
-    /* Front face */
-    /* Bottom left */
     1.0, 0.0, 0.0, /* red */
     0.0, 0.0, 1.0, /* blue */
     0.0, 1.0, 0.0, /* green */
-    /* Top right */
-    1.0, 0.0, 0.0, /* red */
     1.0, 1.0, 0.0, /* yellow */
-    0.0, 0.0, 1.0, /* blue */
-    /* Left face */
-    /* Bottom left */
-    1.0, 1.0, 1.0, /* white */
-    0.0, 1.0, 0.0, /* green */
-    0.0, 1.0, 1.0, /* cyan */
-    /* Top right */
-    1.0, 1.0, 1.0, /* white */
-    1.0, 0.0, 0.0, /* red */
-    0.0, 1.0, 0.0, /* green */
-    /* Top face */
-    /* Bottom left */
-    1.0, 1.0, 1.0, /* white */
-    1.0, 1.0, 0.0, /* yellow */
-    1.0, 0.0, 0.0, /* red */
-    /* Top right */
-    1.0, 1.0, 1.0, /* white */
-    0.0, 0.0, 0.0, /* black */
-    1.0, 1.0, 0.0, /* yellow */
-    /* Right face */
-    /* Bottom left */
-    1.0, 1.0, 0.0, /* yellow */
-    1.0, 0.0, 1.0, /* magenta */
-    0.0, 0.0, 1.0, /* blue */
-    /* Top right */
-    1.0, 1.0, 0.0, /* yellow */
-    0.0, 0.0, 0.0, /* black */
-    1.0, 0.0, 1.0, /* magenta */
-    /* Back face */
-    /* Bottom left */
-    0.0, 0.0, 0.0, /* black */
-    0.0, 1.0, 1.0, /* cyan */
-    1.0, 0.0, 1.0, /* magenta */
-    /* Top right */
-    0.0, 0.0, 0.0, /* black */
-    1.0, 1.0, 1.0, /* white */
-    0.0, 1.0, 1.0, /* cyan */
-    /* Bottom face */
-    /* Bottom left */
-    0.0, 1.0, 0.0, /* green */
-    1.0, 0.0, 1.0, /* magenta */
-    0.0, 1.0, 1.0, /* cyan */
-    /* Top right */
-    0.0, 1.0, 0.0, /* green */
-    0.0, 0.0, 1.0, /* blue */
-    1.0, 0.0, 1.0, /* magenta */
 };
-
 
 void ortho_matrix(
     float left,
@@ -192,12 +79,12 @@ int main(
     EGLContext	sEGLContext;
     EGLSurface	sEGLSurface;
     GLuint      textureId;
-    unsigned char artificial_texture[400*400*4];
+#define TEXTURE_WIDTH   255
+#define TEXTURE_HEIGHT  255
+    unsigned char artificial_texture[TEXTURE_HEIGHT*TEXTURE_WIDTH*4];
 
-
-    /* EGL Configuration */
-
-    EGLint aEGLAttributes[] = {
+    EGLint aEGLAttributes[] = 
+    {
         EGL_RED_SIZE, 8,
         EGL_GREEN_SIZE, 8,
         EGL_BLUE_SIZE, 8,
@@ -206,63 +93,34 @@ int main(
         EGL_NONE
     };
 
-    EGLint aEGLContextAttributes[] = {
+    EGLint aEGLContextAttributes[] = 
+    {
         EGL_CONTEXT_CLIENT_VERSION, 2,
         EGL_NONE
     };
 
-    EGLConfig	aEGLConfigs[1];
-    EGLint		cEGLConfigs;
-
-#ifdef _WIN32
-    MSG sMessage;
-#else
-    XSetWindowAttributes win_attrs;
-    int attrs[64], idx = 0, num_config = 0;
-    int major, minor;
-    Colormap colormap;
-    XVisualInfo *pVisual;
-    XEvent e;
-#endif
-
-    GLint iLocPosition = 0;
-
-    GLint iLocColour, iLocTexCoord, iLocNormal, iLocMVP;
-    GLint iLocXangle, iLocYangle, iLocZangle;
-    GLint iLocAspect, iLocLightPos, iLocSampler, iLocSampler2;
-
-    GLuint uiProgram, uiFragShader, uiVertShader;
-
-    GLenum myTex, myTex2;
-
-    int bDone = 0;
-
+    EGLConfig	    aEGLConfigs[1];
+    EGLint		    cEGLConfigs;
+    MSG             sMessage;
+    GLint           iLocPosition = 0;
+    GLint           iLocColour, iLocMVP, iTexCoords;
+    GLuint          uiProgram, uiFragShader, uiVertShader;
+    int             bDone = 0;
     const unsigned int uiWidth  = 640;
     const unsigned int uiHeight = 480;
+    unsigned char   color = 0; 
+    float           aPerspective[16];
+    int             i, j;
 
-    int iXangle = 0, iYangle = 0, iZangle = 0;
 
-    float aTBNmatrix1[9], aTBNmatrix2[9];
+    // Get display.
+    hDisplay    = EGL_DEFAULT_DISPLAY;
+    sEGLDisplay = eglGetDisplay(hDisplay);
 
-    float aLightPos[] = { 0.0f, 0.0f, -1.0f }; // Light is nearest camera.
-
-    unsigned char *myPixels = calloc(1, 128*128*4); // Holds texture data.
-    unsigned char *myPixels2 = calloc(1, 128*128*4); // Holds texture data.
-
-    float aRotate[16], aModelView[16], aPerspective[16], aMVP[16], projection_matrix[16];
-
-    int i;
-
-    /* EGL Init */
-    hDisplay = EGL_DEFAULT_DISPLAY;
-
-    // 1. Get display.
-    sEGLDisplay = EGL_CHECK(eglGetDisplay(hDisplay));
-
-    // 2. Initialize display.
+    // Initialize display.
     EGL_CHECK(eglInitialize(sEGLDisplay, NULL, NULL));
 
-    // 3. Choose configuration.
+    // Choose configuration.
     eglChooseConfig(sEGLDisplay, aEGLAttributes, aEGLConfigs, 1, &cEGLConfigs);
     if (cEGLConfigs == 0) 
     {
@@ -272,7 +130,7 @@ int main(
 
     hWindow = create_window(uiWidth, uiHeight);
 
-    // 4. Create surface based on window and display.
+    // Create surface based on window and display.
     sEGLSurface = EGL_CHECK(eglCreateWindowSurface(sEGLDisplay,
                                                    aEGLConfigs[0],
                                                    (EGLNativeWindowType) hWindow,
@@ -283,7 +141,7 @@ int main(
         exit(-1);
     }
 
-    // 5. Create context.
+    // Create context.
     sEGLContext = eglCreateContext(sEGLDisplay, aEGLConfigs[0], EGL_NO_CONTEXT, aEGLContextAttributes);
     if(sEGLContext == EGL_NO_CONTEXT) 
     {
@@ -291,17 +149,17 @@ int main(
         exit(-1);
     }
 
-    // 6. Make current.
+    // Make current.
     eglMakeCurrent(sEGLDisplay, sEGLSurface, sEGLSurface, sEGLContext);
 
-    /* Shader Initialisation */
+    // Shader Initialisation
     process_shader(&uiVertShader, "C:\\cygwin\\home\\richard\\dev\\gles_app\\gles_app\\shader.vert", GL_VERTEX_SHADER);
     process_shader(&uiFragShader, "C:\\cygwin\\home\\richard\\dev\\gles_app\\gles_app\\shader.frag", GL_FRAGMENT_SHADER);
 
-    /* Create uiProgram (ready to attach shaders) */
+    // Create uiProgram (ready to attach shaders)
     uiProgram = glCreateProgram();
 
-    /* Attach shaders and link uiProgram */
+    // Attach shaders and link uiProgram
     glAttachShader(uiProgram, uiVertShader);
     glAttachShader(uiProgram, uiFragShader);
     glLinkProgram(uiProgram);
@@ -319,6 +177,12 @@ int main(
         goto cleanup;
     }
 
+    iTexCoords = glGetAttribLocation(uiProgram, "mTexCoords");
+    if(iTexCoords == -1)
+    {
+        goto cleanup;
+    }
+
     /* Get uniform locations */
     iLocMVP = glGetUniformLocation(uiProgram, "mvp");
     if(iLocMVP == -1)
@@ -331,13 +195,13 @@ int main(
     /* Enable attributes for position, colour and texture coordinates etc. */
     glEnableVertexAttribArray(iLocPosition);
     glEnableVertexAttribArray(iLocColour);
-
-    /* Populate attributes for position, colour and texture coordinates etc. */
-    glVertexAttribPointer(iLocPosition, 2, GL_FLOAT, GL_FALSE, 0, aVertices);
-    glVertexAttribPointer(iLocColour, 3, GL_FLOAT, GL_FALSE, 0, aColours);
-
+    glEnableVertexAttribArray(iTexCoords);
+    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // set glTexParameteri
 
@@ -358,28 +222,44 @@ int main(
     glBindTexture(GL_TEXTURE_2D, textureId);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
 
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    for(i = 0; i < 400*400; i += 4)
+    
+    for(i = 0; i < TEXTURE_HEIGHT; i++)
     {
-        artificial_texture[i    ] = i; 
-        artificial_texture[i + 1] = i; 
-        artificial_texture[i + 2] = i; 
-        artificial_texture[i + 3] = 255; 
+        color = 255; 
+
+        for(j = 0; j < TEXTURE_WIDTH; j++)
+        {
+            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 0] = color; 
+            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 1] = color; 
+            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 2] = color; 
+            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 3] = 255; 
+
+            color--;
+        }
     }
 
     glTexImage2D(GL_TEXTURE_2D,
                  0, 
                  (GLint) GL_RGBA, 
-                 (GLsizei) 400, 
-                 (GLsizei) 400, 
+                 (GLsizei) TEXTURE_WIDTH, 
+                 (GLsizei) TEXTURE_HEIGHT, 
                  0, 
                  GL_RGBA, 
                  GL_UNSIGNED_BYTE,
                  artificial_texture); 
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    glActiveTexture(GL_TEXTURE0); 
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    /* Populate attributes for position, colour and texture coordinates etc. */
+    glVertexAttribPointer(iLocPosition, 2, GL_FLOAT, GL_FALSE, 0, aVertices);
+    glVertexAttribPointer(iLocColour, 3, GL_FLOAT, GL_FALSE, 0, aColours);
+    glVertexAttribPointer(iTexCoords, 2, GL_FLOAT, GL_FALSE, 0, aTexCoords);
 
     /* Enter event loop */
     while(!bDone) 
@@ -397,43 +277,9 @@ int main(
             }
         }
 
-#if 0
-        /* 
-        * Do some rotation with Euler angles. It is not a fixed axis as
-        * quaterions would be, but the effect is cool. 
-        */
-        rotate_matrix(iXangle, 1.0, 0.0, 0.0, aModelView);
-        rotate_matrix(iYangle, 0.0, 1.0, 0.0, aRotate);
-
-        multiply_matrix(aRotate, aModelView, aModelView);
-
-        rotate_matrix(iZangle, 0.0, 1.0, 0.0, aRotate);
-
-        multiply_matrix(aRotate, aModelView, aModelView);
-
-        /* Pull the camera back from the cube */
-        aModelView[14] -= 2.5;
-
-        perspective_matrix(45.0, (double)uiWidth/(double)uiHeight, 0.01, 100.0, aPerspective);
-        multiply_matrix(aPerspective, aModelView, aMVP);
-#endif
-
         // perspective_matrix(45.0, (double)uiWidth/(double)uiHeight, 0.01, 100.0, aPerspective);
         ortho_matrix(0, 2, 2, 0, aPerspective); 
         glUniformMatrix4fv(iLocMVP, 1, GL_FALSE, aPerspective);
-
-#if 1
-        iXangle += 3;
-        iYangle += 2;
-        iZangle += 1;
-
-        if(iXangle >= 360) iXangle -= 360;
-        if(iXangle < 0) iXangle += 360;
-        if(iYangle >= 360) iYangle -= 360;
-        if(iYangle < 0) iYangle += 360;
-        if(iZangle >= 360) iZangle -= 360;
-        if(iZangle < 0) iZangle += 360;
-#endif
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 #if 0
@@ -441,7 +287,6 @@ int main(
 #else
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &aIndices[0]);
 #endif
-          
 
         if(!eglSwapBuffers(sEGLDisplay, sEGLSurface)) 
         {

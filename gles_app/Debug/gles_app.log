@@ -1,35 +1,10 @@
-﻿Build started 7/19/2014 9:54:56 AM.
+﻿Build started 7/19/2014 8:36:51 PM.
      1>Project "C:\cygwin\home\richard\dev\gles_app\gles_app\gles_app.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\gles_app.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\ARM\Mali Developer Tools\OpenGL ES Emulator v1.3.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt cube.c
          cube.c
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(24): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(24): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(25): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(25): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(26): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(26): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(27): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(28): warning C4244: 'initializing' : conversion from 'double' to 'const unsigned short', possible loss of data
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(252): warning C4101: 'aMVP' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(245): warning C4101: 'aTBNmatrix2' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(236): warning C4101: 'myTex2' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(232): warning C4101: 'iLocSampler2' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(245): warning C4101: 'aTBNmatrix1' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(231): warning C4101: 'iLocZangle' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(236): warning C4101: 'myTex' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(231): warning C4101: 'iLocYangle' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(230): warning C4101: 'iLocTexCoord' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(252): warning C4101: 'aRotate' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(252): warning C4101: 'projection_matrix' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(252): warning C4101: 'aModelView' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(232): warning C4101: 'iLocAspect' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(231): warning C4101: 'iLocXangle' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(232): warning C4101: 'iLocSampler' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(232): warning C4101: 'iLocLightPos' : unreferenced local variable
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\cube.c(230): warning C4101: 'iLocNormal' : unreferenced local variable
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Program Files (x86)\ARM\Mali Developer Tools\OpenGL ES Emulator v1.3.0\lib" libEGL.lib libGLESv1_CM.lib libGLESv2.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\gles_app.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\cygwin\home\richard\dev\gles_app\Debug\gles_app.lib" /MACHINE:X86 Debug\cube.obj
          Debug\matrix.obj
@@ -46,4 +21,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:13.88
+Time Elapsed 00:00:01.18
