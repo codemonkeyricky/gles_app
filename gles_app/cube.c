@@ -7,6 +7,8 @@
 #include "GLES2/gl2.h"
 #include "EGL/egl.h"
 
+#include <il/il.h>
+
 HWND hWindow;
 HDC  hDisplay;
 
@@ -69,6 +71,33 @@ void ortho_matrix(
     matrix[3*4 + 2] = - (f + n) / (f - n); 
 }
 
+void loadTexture(
+    char           *path, 
+    unsigned int   *width, 
+    unsigned int   *height, 
+    char          **pixels
+    )
+{
+    ILuint  texid; 
+//    ILenum  error; 
+    char *location = "C:/cygwin/home/richard/dev/gles_app/gles_app/player.png"; 
+
+    ilInit();
+
+    ilGenImages(1, &texid); 
+    ilBindImage(texid); 
+    ilLoadImage((const wchar_t *) location); 
+
+    *width = ilGetInteger(IL_IMAGE_WIDTH); 
+    *height = ilGetInteger(IL_IMAGE_HEIGHT);
+
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE); 
+
+    *pixels = malloc((*width) * (*height) * 4); 
+
+    memcpy(*pixels, (void *) ilGetData(), (*width) * (*height) * 4);
+}
+
 
 int main(
     int     argc,
@@ -79,9 +108,6 @@ int main(
     EGLContext	sEGLContext;
     EGLSurface	sEGLSurface;
     GLuint      textureId;
-#define TEXTURE_WIDTH   256
-#define TEXTURE_HEIGHT  256
-    unsigned char artificial_texture[TEXTURE_HEIGHT*TEXTURE_WIDTH*4];
 
     EGLint aEGLAttributes[] = 
     {
@@ -111,6 +137,8 @@ int main(
     unsigned char   color = 0; 
     float           aPerspective[16];
     int             i, j;
+    unsigned int width, height; 
+    char *pixel_data = NULL; 
 
 
     // Get display.
@@ -118,7 +146,7 @@ int main(
     sEGLDisplay = eglGetDisplay(hDisplay);
 
     // Initialize display.
-    EGL_CHECK(eglInitialize(sEGLDisplay, NULL, NULL));
+    eglInitialize(sEGLDisplay, NULL, NULL);
 
     // Choose configuration.
     eglChooseConfig(sEGLDisplay, aEGLAttributes, aEGLConfigs, 1, &cEGLConfigs);
@@ -225,29 +253,17 @@ int main(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    color = 255; 
-    for(i = 0; i < TEXTURE_HEIGHT; i++)
-    {
-        for(j = 0; j < TEXTURE_WIDTH; j++)
-        {
-            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 0] = color; 
-            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 1] = 0; 
-            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 2] = color; 
-            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 3] = 255; 
-
-            color--;
-        }
-    }
+    loadTexture("test", &width, &height, &pixel_data); 
 
     glTexImage2D(GL_TEXTURE_2D,
                  0, 
                  (GLint) GL_RGBA, 
-                 (GLsizei) TEXTURE_WIDTH, 
-                 (GLsizei) TEXTURE_HEIGHT, 
+                 (GLsizei) width, 
+                 (GLsizei) height, 
                  0, 
                  GL_RGBA, 
                  GL_UNSIGNED_BYTE,
-                 artificial_texture); 
+                 pixel_data); 
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -280,11 +296,7 @@ int main(
         glUniformMatrix4fv(iLocMVP, 1, GL_FALSE, aPerspective);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-#if 0
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-#else
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &aIndices[0]);
-#endif
 
         if(!eglSwapBuffers(sEGLDisplay, sEGLSurface)) 
         {
