@@ -77,14 +77,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cube.c" />
-    <ClCompile Include="matrix.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="shader.c" />
     <ClCompile Include="window.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cube.h" />
-    <ClInclude Include="matrix.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

@@ -15,24 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cube.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="matrix.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="shader.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="window.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">

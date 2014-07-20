@@ -136,7 +136,6 @@ int main(
     const unsigned int uiHeight = 480;
     unsigned char   color = 0; 
     float           aPerspective[16];
-    int             i, j;
     unsigned int width, height; 
     char *pixel_data = NULL; 
 
