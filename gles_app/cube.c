@@ -79,8 +79,8 @@ int main(
     EGLContext	sEGLContext;
     EGLSurface	sEGLSurface;
     GLuint      textureId;
-#define TEXTURE_WIDTH   255
-#define TEXTURE_HEIGHT  255
+#define TEXTURE_WIDTH   256
+#define TEXTURE_HEIGHT  256
     unsigned char artificial_texture[TEXTURE_HEIGHT*TEXTURE_WIDTH*4];
 
     EGLint aEGLAttributes[] = 
@@ -225,15 +225,13 @@ int main(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    
+    color = 255; 
     for(i = 0; i < TEXTURE_HEIGHT; i++)
     {
-        color = 255; 
-
         for(j = 0; j < TEXTURE_WIDTH; j++)
         {
             artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 0] = color; 
-            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 1] = color; 
+            artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 1] = 0; 
             artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 2] = color; 
             artificial_texture[i*TEXTURE_WIDTH*4 + j*4 + 3] = 255; 
 
