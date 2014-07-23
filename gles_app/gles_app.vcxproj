@@ -77,11 +77,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
-    <ClCompile Include="shader.c" />
-    <ClCompile Include="window.c" />
+    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="entity.hpp" />
+    <ClInclude Include="renderer.hpp" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
