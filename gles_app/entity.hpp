@@ -1,13 +1,17 @@
 
+#include "IL/il.h"
+
 class Entity
 {
 public:
-    void Entity();
+    Entity();
     void draw();
     void setX();
     void setY();
 
 private:
-    int x;
-    int y;
+    void    textureLoad();
+    int     x;
+    int     y;
+    GLuint  m_textureId;
 };

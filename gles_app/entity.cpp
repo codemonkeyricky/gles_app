@@ -1,4 +1,13 @@
-#if 0
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "assert.h"
+
+#include "GLES2/gl2.h"
+#include "EGL/egl.h"
+
+#include "entity.hpp"
+
 void loadTexture(
     char           *path,
     unsigned int   *width,
@@ -8,7 +17,7 @@ void loadTexture(
 {
     ILuint  texid;
 //    ILenum  error;
-    char *location = "C:/cygwin/home/richard/dev/gles_app/gles_app/player.png";
+    char *location = "C:/cygwin/home/ricky/dev/gles_app/gles_app/player.png";
 
     ilInit();
 
@@ -21,28 +30,30 @@ void loadTexture(
 
     ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
-    *pixels = malloc((*width) * (*height) * 4);
+    *pixels = (char *) malloc((*width) * (*height) * 4);
 
     memcpy(*pixels, (void *) ilGetData(), (*width) * (*height) * 4);
 }
 
 
-static void textureLoad(
+void Entity::textureLoad(
     void
     )
 {
+    unsigned int    width;
+    unsigned int    height;
+	char           *pixel_data;
+
+
     // Load texture.
-    glGenTextures(1, &textureId);
-    if(textureId == 0)
-    {
-        goto cleanup;
-    }
+    glGenTextures(1, &m_textureId);
+    assert(m_textureId != NULL);
 
     // -------------------
     //  Setup texture
     // -------------------
 
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glBindTexture(GL_TEXTURE_2D, m_textureId);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -64,7 +75,7 @@ static void textureLoad(
 }
 
 
-void Entity::Entity()
+Entity::Entity()
 {
 
 }
@@ -75,4 +86,3 @@ void Entity::draw(
 {
 
 }
-#endif
