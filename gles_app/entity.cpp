@@ -77,7 +77,7 @@ void Entity::textureLoad(
 
 Entity::Entity()
 {
-
+    textureLoad();
 }
 
 

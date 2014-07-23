@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "renderer.hpp"
+#include "entity.hpp"
 
 //#include <il/il.h>
 
@@ -44,11 +45,13 @@ int main(
     )
 {
     Renderer   *renderer;
+    Entity     *entity;
     bool        bDone = false;
     MSG         sMessage;
 
 
-    renderer = new Renderer();
+    renderer    = new Renderer();
+    entity      = new Entity();
 
     /* Enter event loop */
     while(!bDone) 
