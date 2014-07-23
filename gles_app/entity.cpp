@@ -1,4 +1,4 @@
-
+#if 0
 void loadTexture(
     char           *path,
     unsigned int   *width,
@@ -75,3 +75,4 @@ void Entity::draw(
 {
 
 }
+#endif

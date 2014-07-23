@@ -1,65 +1,17 @@
-﻿Build started 7/21/2014 9:29:41 PM.
-     1>Project "C:\cygwin\home\richard\dev\gles_app\gles_app\gles_app.vcxproj" on node 2 (build target(s)).
+﻿Build started 2014-07-22 7:27:59 PM.
+     1>Project "C:\cygwin\home\Ricky\dev\gles_app\gles_app\gles_app.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\gles_app.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\cygwin\home\richard\dev\DevIL-SDK-x86-1.7.8\include" /I"C:\Program Files (x86)\ARM\Mali Developer Tools\OpenGL ES Emulator v1.3.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt entity.cpp main.cpp renderer.cpp
-         renderer.cpp
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\renderer.cpp(91): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
-         entity.cpp
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(9): error C2065: 'ILuint' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(9): error C2146: syntax error : missing ';' before identifier 'texid'
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(9): error C2065: 'texid' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(13): error C3861: 'ilInit': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(15): error C2065: 'texid' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(15): error C3861: 'ilGenImages': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(16): error C2065: 'texid' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(16): error C3861: 'ilBindImage': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(17): error C3861: 'ilLoadImage': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(19): error C2065: 'IL_IMAGE_WIDTH' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(19): error C3861: 'ilGetInteger': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(20): error C2065: 'IL_IMAGE_HEIGHT' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(20): error C3861: 'ilGetInteger': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(22): error C2065: 'IL_RGBA' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(22): error C2065: 'IL_UNSIGNED_BYTE' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(22): error C3861: 'ilConvertImage': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(24): error C3861: 'malloc': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(26): error C3861: 'memcpy': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(26): error C3861: 'ilGetData': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(35): error C2065: 'textureId' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(35): error C3861: 'glGenTextures': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(36): error C2065: 'textureId' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(45): error C2065: 'GL_TEXTURE_2D' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(45): error C2065: 'textureId' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(45): error C3861: 'glBindTexture': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(46): error C2065: 'GL_UNPACK_ALIGNMENT' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(46): error C3861: 'glPixelStorei': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(48): error C2065: 'GL_TEXTURE_2D' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(48): error C2065: 'GL_TEXTURE_MIN_FILTER' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(48): error C2065: 'GL_NEAREST' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(48): error C3861: 'glTexParameteri': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(49): error C2065: 'GL_TEXTURE_2D' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(49): error C2065: 'GL_TEXTURE_MAG_FILTER' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(49): error C2065: 'GL_NEAREST' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(49): error C3861: 'glTexParameteri': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(51): error C2065: 'width' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(51): error C2065: 'height' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(51): error C2065: 'pixel_data' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(53): error C2065: 'GL_TEXTURE_2D' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(55): error C2065: 'GLint' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(55): error C2146: syntax error : missing ')' before identifier 'GL_RGBA'
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(61): error C2059: syntax error : ')'
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(63): error C2065: 'GL_TEXTURE_2D' : undeclared identifier
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(53): error C3861: 'glTexImage2D': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(63): error C3861: 'glBindTexture': identifier not found
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(67): error C2653: 'Entity' : is not a class or namespace name
-     1>c:\cygwin\home\richard\dev\gles_app\gles_app\entity.cpp(73): error C2653: 'Entity' : is not a class or namespace name
-         Generating Code...
-         Skipping... (no relevant changes detected)
-         main.cpp
-     1>Done Building Project "C:\cygwin\home\richard\dev\gles_app\gles_app\gles_app.vcxproj" (build target(s)) -- FAILED.
+         All outputs are up-to-date.
+       Link:
+         All outputs are up-to-date.
+         gles_app.vcxproj -> C:\cygwin\home\Ricky\dev\gles_app\Debug\gles_app.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\gles_app.unsuccessfulbuild".
+         Touching "Debug\gles_app.lastbuildstate".
+     1>Done Building Project "C:\cygwin\home\Ricky\dev\gles_app\gles_app\gles_app.vcxproj" (build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:02.84
+Time Elapsed 00:00:00.06
