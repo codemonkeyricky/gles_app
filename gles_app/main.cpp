@@ -51,7 +51,7 @@ int main(
 
 
     renderer    = new Renderer();
-    entity      = new Entity();
+    entity      = new Entity(renderer);
 
     /* Enter event loop */
     while(!bDone) 
@@ -68,6 +68,8 @@ int main(
                 DispatchMessage(&sMessage);
             }
         }
+
+        entity->draw();
 
         renderer->render();
 

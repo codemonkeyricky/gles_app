@@ -40,32 +40,30 @@ void Entity::textureLoad(
     void
     )
 {
-    unsigned int    width;
-    unsigned int    height;
-	char           *pixel_data;
+	char   *pixel_data;
 
 
     // Load texture.
-    glGenTextures(1, &m_textureId);
-    assert(m_textureId != NULL);
+    glGenTextures(1, &m_texture);
+    assert(m_texture != NULL);
 
     // -------------------
     //  Setup texture
     // -------------------
 
-    glBindTexture(GL_TEXTURE_2D, m_textureId);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    loadTexture("test", &width, &height, &pixel_data);
+    loadTexture("test", &m_width, &m_height, &pixel_data);
 
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  (GLint) GL_RGBA,
-                 (GLsizei) width,
-                 (GLsizei) height,
+                 (GLsizei) m_width,
+                 (GLsizei) m_height,
                  0,
                  GL_RGBA,
                  GL_UNSIGNED_BYTE,
@@ -75,14 +73,17 @@ void Entity::textureLoad(
 }
 
 
-Entity::Entity()
+Entity::Entity(
+    Renderer   *renderer
+    ) : m_renderer(renderer), m_posX(0), m_posY(0), m_rot(0)
 {
     textureLoad();
 }
 
 
 void Entity::draw(
-    )
+    void
+    ) const
 {
-
+    m_renderer->draw(m_posX, m_posY, m_width, m_height, m_rot, m_texture);
 }

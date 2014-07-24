@@ -1,3 +1,6 @@
+#ifndef RENDERER_HPP
+#define RENDERER_HPP
+
 #include <vector>
 
 #include "GLES2/gl2.h"
@@ -5,6 +8,7 @@
 
 typedef struct
 {
+    GLuint                      texture;
     std::vector<float>          texCoords;
     std::vector<unsigned short> indices;
     std::vector<float>          vertices;
@@ -23,7 +27,15 @@ public:
     void entityRemove();
 
     void render();
-    void draw();
+    void draw(
+        int             x,
+        int             y,
+        unsigned int    width,
+        unsigned int    height,
+        float           rot,
+        GLuint          texture
+    );
+
 
 private:
     EGLDisplay  m_sEGLDisplay;
@@ -36,3 +48,5 @@ private:
 
     std::vector<sEntityAttributes>  m_entityAttributes;
 };
+
+#endif // #define RENDERER_HPP

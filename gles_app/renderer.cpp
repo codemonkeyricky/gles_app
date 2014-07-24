@@ -279,6 +279,8 @@ Renderer::Renderer(
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
+
+    m_entityAttributes.clear();
 }
 
 
@@ -310,11 +312,103 @@ void Renderer::entityRemove()
 }
 
 
-void Renderer::draw(
-    void
+static void texCoordsPush(
+    std::vector<float> &texCoords
     )
 {
+    // Point 1.
+    texCoords.push_back(0.0f);
+    texCoords.push_back(0.0f);
 
+    // Point 2.
+    texCoords.push_back(1.0f);
+    texCoords.push_back(0.0f);
+
+    // Point 3.
+    texCoords.push_back(1.0f);
+    texCoords.push_back(1.0f);
+
+    // Point 4.
+    texCoords.push_back(0.0f);
+    texCoords.push_back(1.0f);
+}
+
+
+static void verticesPush(
+    std::vector<float> &vertices,
+    int                 x,
+    int                 y,
+    unsigned int        width,
+    unsigned int        height
+  )
+{
+    vertices.push_back((float) x);
+    vertices.push_back((float) y);
+
+    vertices.push_back((float) (x + 1));
+    vertices.push_back((float) y);
+
+    vertices.push_back((float) (x + 1));
+    vertices.push_back((float) (y + 1));
+
+    vertices.push_back((float) x);
+    vertices.push_back((float) (y + 1));
+}
+
+
+static void colorPush(
+    std::vector<float> &color
+    )
+{
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+}
+
+
+static void indicesPush(
+    std::vector<unsigned short> &indices
+    )
+{
+    indices.push_back(0);
+    indices.push_back(2);
+    indices.push_back(1);
+
+    indices.push_back(0);
+    indices.push_back(3);
+    indices.push_back(2);
+}
+
+
+void Renderer::draw(
+    int             x,
+    int             y,
+    unsigned int    width,
+    unsigned int    height,
+    float           rot,
+    GLuint          texture
+    )
+{
+    sEntityAttributes   attr;
+
+
+    // Set texture.
+    attr.texture = texture;
+
+    // Push vertices.
+    verticesPush(attr.vertices, x, y, width, height);
+
+    // Push text coordinates.
+    texCoordsPush(attr.texCoords);
+
+    // Push color
+    colorPush(attr.colors);
+
+    // Push indices.
+    indicesPush(attr.indices);
+
+    // Push attribute onto the vector.
+    m_entityAttributes.push_back(attr);
 }
 
 
@@ -332,7 +426,6 @@ void Renderer::render(
     glUseProgram(m_uiProgram);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_textureId);
 
     // Get uniform location.
     mvp = glGetUniformLocation(m_uiProgram, "mvp");
@@ -344,6 +437,9 @@ void Renderer::render(
 
     for(i = 0; i < m_entityAttributes.size(); i++)
     {
+        // Bind texture.
+        glBindTexture(GL_TEXTURE_2D, m_entityAttributes[i].texture);
+
         // Get attributes.
         position = glGetAttribLocation(m_uiProgram, "mPosition");
         assert(position != -1);
@@ -383,6 +479,8 @@ void Renderer::render(
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_entityAttributes[i].indices[0]);
     }
+
+    m_entityAttributes.clear();
 
     if(!eglSwapBuffers(m_sEGLDisplay, m_sEGLSurface))
     {
