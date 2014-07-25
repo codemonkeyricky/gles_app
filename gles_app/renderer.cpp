@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "constants.hpp"
 #include "renderer.hpp"
-
 
 /*
  * process_window(): This function handles Windows callbacks.
@@ -228,8 +228,8 @@ Renderer::Renderer(
 
     EGLConfig           aEGLConfigs[1];
     EGLint              cEGLConfigs;
-    const unsigned int  uiWidth  = 640;
-    const unsigned int  uiHeight = 480;
+    const unsigned int  uiWidth  = constants::WINDOW_WIDTH;
+    const unsigned int  uiHeight = constants::WINDOW_HEIGHT;
 
 
     // Get display.
@@ -345,14 +345,14 @@ static void verticesPush(
     vertices.push_back((float) x);
     vertices.push_back((float) y);
 
-    vertices.push_back((float) (x + 1));
+    vertices.push_back((float) (x + width));
     vertices.push_back((float) y);
 
-    vertices.push_back((float) (x + 1));
-    vertices.push_back((float) (y + 1));
+    vertices.push_back((float) (x + width));
+    vertices.push_back((float) (y + height));
 
     vertices.push_back((float) x);
-    vertices.push_back((float) (y + 1));
+    vertices.push_back((float) (y + height));
 }
 
 
@@ -421,10 +421,13 @@ void Renderer::render(
     unsigned int    i;
 
 
+    // Clear framebuffer.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    // Use program.
     glUseProgram(m_uiProgram);
 
+    // Set active texture unit.
     glActiveTexture(GL_TEXTURE0);
 
     // Get uniform location.
@@ -432,7 +435,7 @@ void Renderer::render(
     assert(mvp != -1);
 
     // TODO: can this be be initialized only once?
-    ortho_matrix(0, 2, 2, 0, ortho);
+    ortho_matrix(0, (float) constants::WINDOW_WIDTH, (float) constants::WINDOW_HEIGHT, 0, ortho);
     glUniformMatrix4fv(mvp, 1, GL_FALSE, ortho);
 
     for(i = 0; i < m_entityAttributes.size(); i++)
@@ -444,15 +447,15 @@ void Renderer::render(
         position = glGetAttribLocation(m_uiProgram, "mPosition");
         assert(position != -1);
 
-        color = glGetAttribLocation(m_uiProgram, "av3colour");
-        assert(color != -1);
+//        color = glGetAttribLocation(m_uiProgram, "av3colour");
+//        assert(color != -1);
 
         texCoords = glGetAttribLocation(m_uiProgram, "mTexCoords");
         assert(texCoords != -1);
         
         // Enable attributes.
         glEnableVertexAttribArray(position);
-        glEnableVertexAttribArray(color);
+//        glEnableVertexAttribArray(color);
         glEnableVertexAttribArray(texCoords);
 
         // Set attributes.
@@ -463,12 +466,12 @@ void Renderer::render(
                               0,
                               &m_entityAttributes[i].vertices[0]);
 
-        glVertexAttribPointer(color,
-                              3,
-                              GL_FLOAT,
-                              GL_FALSE,
-                              0,
-                              &m_entityAttributes[i].colors[0]);
+//        glVertexAttribPointer(color,
+//                              3,
+//                              GL_FLOAT,
+//                              GL_FALSE,
+//                              0,
+//                              &m_entityAttributes[i].colors[0]);
 
         glVertexAttribPointer(texCoords,
                               2,

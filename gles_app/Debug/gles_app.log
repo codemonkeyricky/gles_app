@@ -1,4 +1,4 @@
-﻿Build started 2014-07-23 8:01:29 PM.
+﻿Build started 2014-07-24 7:00:55 PM.
      1>Project "C:\cygwin\home\Ricky\dev\gles_app\gles_app\gles_app.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\gles_app.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -14,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.07
+Time Elapsed 00:00:00.21
