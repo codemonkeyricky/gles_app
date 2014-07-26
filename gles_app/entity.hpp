@@ -1,5 +1,4 @@
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#pragma once
 
 #include "IL/il.h"
 
@@ -23,5 +22,3 @@ private:
     GLuint      m_texture;
     Renderer   *m_renderer;
 };
-
-#endif // #define ENTITY_HPP

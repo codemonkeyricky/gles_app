@@ -16,8 +16,7 @@ void loadTexture(
     )
 {
     ILuint  texid;
-//    ILenum  error;
-    char *location = "C:/cygwin/home/ricky/dev/gles_app/gles_app/player.png";
+    char   *location = "C:/cygwin/home/ricky/dev/gles_app/gles_app/player.png";
 
     ilInit();
 

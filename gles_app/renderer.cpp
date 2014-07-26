@@ -5,6 +5,9 @@
 #include "constants.hpp"
 #include "renderer.hpp"
 
+// 1x2 * 2x2 matrix operator
+Vector2f operator *(const Vector2f &ct, const Matrix2x2f &m) { return Vector2f(ct.dot(m[0]), ct.dot(m[1])); }
+
 /*
  * process_window(): This function handles Windows callbacks.
  */
@@ -335,24 +338,39 @@ static void texCoordsPush(
 
 
 static void verticesPush(
-    std::vector<float> &vertices,
+    std::vector<Vector2f>   &vertices,
     int                 x,
     int                 y,
     unsigned int        width,
-    unsigned int        height
+    unsigned int        height,
+    float               rot
   )
 {
-    vertices.push_back((float) x);
-    vertices.push_back((float) y);
+    float   co = cosf(rot);
+    float   s = sinf(rot);
+    Matrix2x2f  rotMatrix(Vector2f(co, -s), Vector2f(s, co));
+    unsigned int i, j;
+    unsigned int curr;
+    Vector2f    pos;
 
-    vertices.push_back((float) (x + width));
-    vertices.push_back((float) y);
 
-    vertices.push_back((float) (x + width));
-    vertices.push_back((float) (y + height));
+    curr = vertices.size();
 
-    vertices.push_back((float) x);
-    vertices.push_back((float) (y + height));
+    vertices.push_back(Vector2f((float) x, (float) y));
+    vertices.push_back(Vector2f((float)(x + width), (float)y));
+    vertices.push_back(Vector2f((float)(x + width), (float)(y + height)));
+    vertices.push_back(Vector2f((float) x, (float)(y + height)));
+
+    for(i = 0; i < 4; i++)
+    {
+        Vector2f in = vertices[curr + i]
+                                - Vector2f(x, y)
+                                - Vector2f(width/2, height/2);
+
+        Vector2f out = in * rotMatrix;
+
+        vertices[curr + i] = out + Vector2f(x, y);
+    }
 }
 
 
@@ -396,7 +414,7 @@ void Renderer::draw(
     attr.texture = texture;
 
     // Push vertices.
-    verticesPush(attr.vertices, x, y, width, height);
+    verticesPush(attr.vertices, x, y, width, height, rot);
 
     // Push text coordinates.
     texCoordsPush(attr.texCoords);
