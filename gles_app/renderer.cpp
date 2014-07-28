@@ -4,9 +4,8 @@
 
 #include "constants.hpp"
 #include "renderer.hpp"
+#include "Matrix.h"
 
-// 1x2 * 2x2 matrix operator
-Vector2f operator *(const Vector2f &ct, const Matrix2x2f &m) { return Vector2f(ct.dot(m[0]), ct.dot(m[1])); }
 
 /*
  * process_window(): This function handles Windows callbacks.
@@ -338,38 +337,35 @@ static void texCoordsPush(
 
 
 static void verticesPush(
-    std::vector<Vector2f>   &vertices,
-    int                 x,
-    int                 y,
-    unsigned int        width,
-    unsigned int        height,
-    float               rot
+    std::vector<Vector2f>  &vertices,
+    Vector2f               &position,
+    Vector2f               &dimension,
+    float                   orientation
   )
 {
-    float   co = cosf(rot);
-    float   s = sinf(rot);
+    float       co = cosf(orientation);
+    float       s = sinf(orientation);
     Matrix2x2f  rotMatrix(Vector2f(co, -s), Vector2f(s, co));
-    unsigned int i, j;
-    unsigned int curr;
-    Vector2f    pos;
+    unsigned    int i;
+    unsigned    int curr;
 
 
     curr = vertices.size();
 
-    vertices.push_back(Vector2f((float) x, (float) y));
-    vertices.push_back(Vector2f((float)(x + width), (float)y));
-    vertices.push_back(Vector2f((float)(x + width), (float)(y + height)));
-    vertices.push_back(Vector2f((float) x, (float)(y + height)));
+    vertices.push_back(position);
+    vertices.push_back(Vector2f((float)(position.x + dimension.x), (float) position.y));
+    vertices.push_back(position + dimension);
+    vertices.push_back(Vector2f((float) position.x, (float)(position.y + dimension.y)));
 
     for(i = 0; i < 4; i++)
     {
         Vector2f in = vertices[curr + i]
-                                - Vector2f(x, y)
-                                - Vector2f(width/2, height/2);
+                                - position
+                                - dimension/2;
 
         Vector2f out = in * rotMatrix;
 
-        vertices[curr + i] = out + Vector2f(x, y);
+        vertices[curr + i] = out + position;
     }
 }
 
@@ -399,12 +395,10 @@ static void indicesPush(
 
 
 void Renderer::draw(
-    int             x,
-    int             y,
-    unsigned int    width,
-    unsigned int    height,
-    float           rot,
-    GLuint          texture
+    Vector2f   &position,
+    Vector2f   &dimension,
+    float       orientation,
+    GLuint      texture
     )
 {
     sEntityAttributes   attr;
@@ -414,7 +408,7 @@ void Renderer::draw(
     attr.texture = texture;
 
     // Push vertices.
-    verticesPush(attr.vertices, x, y, width, height, rot);
+    verticesPush(attr.vertices, position, dimension, orientation);
 
     // Push text coordinates.
     texCoordsPush(attr.texCoords);

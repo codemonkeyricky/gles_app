@@ -77,15 +77,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="entity.cpp" />
+    <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="PlayerShip.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="constants.hpp" />
     <ClInclude Include="entity.hpp" />
+    <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="PlayerShip.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="renderer.hpp" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Vector.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
