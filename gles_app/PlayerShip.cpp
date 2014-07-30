@@ -26,8 +26,8 @@ void PlayerShip::update()
     }
     else
     {
-        // TODO: Get aim.
-        Vector2f aim = Vector2f(0, 0);
+        // Get aim direction.
+		Vector2f aim = Input::getInstance()->getMouseAimDirection();
 
         if(aim.lengthSquared() > 0 && mCooldownRemaining <= 0)
         {
@@ -64,8 +64,9 @@ void PlayerShip::update()
 
         const float kSpeed = 8;
 
-        m_velocity += kSpeed * Input::getInstance()->getMovementDirection();
-        m_position += m_velocity;
+		Vector2f temp = kSpeed * Input::getInstance()->getMovementDirection();
+        m_velocity = m_velocity + temp;
+        m_position = m_position + m_velocity;
 
         // TODO:
 //        mPosition = tVector2f(tMath::clamp(mPosition.x, (float)getSize().x / 2.0f, (float)GameRoot::getInstance()->getViewportSize().x - getSize().x / 2),

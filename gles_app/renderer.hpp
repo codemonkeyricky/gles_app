@@ -51,4 +51,6 @@ private:
     std::vector<sEntityAttributes>  m_entityAttributes;
 
 	friend class Singleton<Renderer>; 
+
+	friend class Input;
 };

@@ -20,7 +20,7 @@ public:
     Vector2f operator +(const Vector2f &b) const { return Vector2f(x + b.x, y + b.y); }
     Vector2f operator -(const Vector2f &b) const { return Vector2f(x - b.x, y - b.y); }
     Vector2f operator *(const Vector2f &b) const { return Vector2f(x * b.x, y * b.y); }
-    Vector2f operator /(const float &b) const { return Vector2f(x/2, y/2); }
+    Vector2f operator /(const float &b) const { return Vector2f(x/b, y/b); }
     Vector2f operator *(const float &b) const { return Vector2f(x * b, y * b); }
 
     bool operator ==(const Vector2f &b) const { return (x == b.x) && (y == b.y); }
@@ -39,6 +39,7 @@ public:
 	float distance(const Vector2f &p1) const;
 	float distanceSquared(const Vector2f &p1) const;
     float dot(const Vector2f &v2) const;
+    Vector2f normalize() const;
 };
 
 Vector2f operator *(const float &s, const Vector2f &v); 

@@ -1,1 +1,5 @@
-﻿  gles_app.vcxproj -> C:\cygwin\home\Ricky\dev\gles_app\Debug\gles_app.exe
+﻿  Input.cpp
+c:\cygwin\home\ricky\dev\gles_app\gles_app\input.cpp(40): warning C4244: 'argument' : conversion from 'LONG' to 'const float', possible loss of data
+c:\cygwin\home\ricky\dev\gles_app\gles_app\input.cpp(40): warning C4244: 'argument' : conversion from 'LONG' to 'const float', possible loss of data
+Bullet.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  gles_app.vcxproj -> C:\cygwin\home\Ricky\dev\gles_app\Debug\gles_app.exe

@@ -5,7 +5,7 @@
 #include "entity.hpp"
 #include "EntityManager.h"
 #include "PlayerShip.h"
-
+#include "Input.h"
 
 int main(
     int     argc,
@@ -20,6 +20,9 @@ int main(
 
     while(1) 
     {
+        // Update input.
+        Input::getInstance()->update();
+
 		// Update entities held by entity manager.
 		EntityManager::getInstance()->update(); 
 

@@ -90,15 +90,6 @@ Entity::~Entity()
 
 }
 
-#if 0
-Entity::Entity(
-    Renderer   *renderer
-    ) : m_renderer(renderer), m_position(0, 0), m_orientation(0)
-{
-    textureLoad();
-}
-#endif
-
 
 void Entity::draw(
     void
