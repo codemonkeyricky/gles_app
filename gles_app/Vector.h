@@ -26,7 +26,7 @@ public:
     bool operator ==(const Vector2f &b) const { return (x == b.x) && (y == b.y); }
     bool operator !=(const Vector2f &b) const { return *this != b; }
 
-    Vector2f operator +=(const Vector2f &b) const { return Vector2f(x + b.x, y + b.y); }
+    Vector2f& operator +=(const Vector2f &b) { *this = *this + b; return *this; }
 
 public:
     // Constructors.

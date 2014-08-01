@@ -61,8 +61,6 @@ void EntityManager::update()
         (*iter)->update();
         if((*iter)->isExpired())
         {
-            delete *iter;
-
             *iter = NULL;
         }
     }

@@ -44,5 +44,5 @@ void Input::update()
 
 Vector2f Input::getMovementDirection() const
 {
-	return getMouseAimDirection();
+	return Vector2f(0, 0); 
 }

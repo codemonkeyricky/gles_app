@@ -17,7 +17,6 @@ public:
 
 protected:
     GLuint      m_texture;
-//    Renderer   *m_renderer;
     Vector2f    m_position;
     Vector2f    m_dimension;
     Vector2f    m_velocity;
@@ -44,6 +43,6 @@ public:
 
     void        setExpired();
 
-private:
-    void        textureLoad();
+protected:
+    void        loadTexture(char *path);
 };

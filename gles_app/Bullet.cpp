@@ -8,6 +8,8 @@ Bullet::Bullet(
     const Vector2f &velocity
     )
 {
+    loadTexture("C:/cygwin/home/ricky/dev/gles_app/gles_app/bullet.png");
+
     m_position = position;
     m_velocity = velocity;
 
@@ -35,6 +37,6 @@ void Bullet::update(
     boundary = Rectf(0, 0, (float) constants::WINDOW_WIDTH, (float) constants::WINDOW_HEIGHT);
     if(!boundary.contains(Vector2f(m_position.x, m_position.y)))
     {
-        m_isExpired = true;
+        setExpired(); // m_isExpired = true;
     }
 }

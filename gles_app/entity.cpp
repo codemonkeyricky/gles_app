@@ -8,15 +8,15 @@
 
 #include "entity.hpp"
 
-void loadTexture(
-    char           *path,
+void loadPNG(
+    char           *location,
     unsigned int   *width,
     unsigned int   *height,
     char          **pixels
     )
 {
     ILuint  texid;
-    char   *location = "C:/cygwin/home/ricky/dev/gles_app/gles_app/player.png";
+//    char   *location = "C:/cygwin/home/ricky/dev/gles_app/gles_app/player.png";
 
     ilInit();
 
@@ -35,8 +35,8 @@ void loadTexture(
 }
 
 
-void Entity::textureLoad(
-    void
+void Entity::loadTexture(
+    char   *path
     )
 {
 	char           *pixel_data;
@@ -58,7 +58,7 @@ void Entity::textureLoad(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    loadTexture("test", &width, &height, &pixel_data);
+    loadPNG(path, &width, &height, &pixel_data);
 
 	m_dimension.x = (float) width; 
 	m_dimension.y = (float) height; 
@@ -79,9 +79,14 @@ void Entity::textureLoad(
 
 Entity::Entity(
 	void
-	)
+	) :
+	m_position(0, 0),
+	m_velocity(0, 0),
+	m_orientation(0),
+	m_radius(0),
+	m_isExpired(false),
+	m_kind(kDontCare)
 {
-    textureLoad();
 }
 
 

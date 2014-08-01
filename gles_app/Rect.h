@@ -21,7 +21,7 @@ public:
         if(   newPt.x >= location.x
            && newPt.y >= location.y
            && newPt.x < (location.x + size.width)
-           && newPt.x < (location.y + size.height))
+           && newPt.y < (location.y + size.height))
         {
             return true;
         }

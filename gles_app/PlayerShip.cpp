@@ -12,6 +12,8 @@ PlayerShip::PlayerShip()
     : mCooldownRemaining(0),
       mFramesUntilRespawn(0)
 {
+    loadTexture("C:/cygwin/home/ricky/dev/gles_app/gles_app/player.png");
+
     m_position   = Vector2f(constants::WINDOW_WIDTH/2, constants::WINDOW_HEIGHT/2);
     m_radius     = 10;
 }
