@@ -1,3 +1,0 @@
-﻿  EntityManager.cpp
-Bullet.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
-  gles_app.vcxproj -> C:\cygwin\home\Ricky\dev\gles_app\Debug\gles_app.exe
