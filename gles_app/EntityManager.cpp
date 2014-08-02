@@ -1,5 +1,5 @@
 #include "EntityManager.h"
-#include "Entity.hpp"
+#include "Entity.h"
 #include "Bullet.h"
 
 

@@ -1,8 +1,8 @@
 
 #include <stdlib.h>
 
-#include "renderer.hpp"
-#include "entity.hpp"
+#include "Renderer.h"
+#include "Entity.h"
 #include "EntityManager.h"
 #include "PlayerShip.h"
 #include "Input.h"

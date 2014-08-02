@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entity.hpp"
+#include "Entity.h"
 
 class Bullet
     : public Entity

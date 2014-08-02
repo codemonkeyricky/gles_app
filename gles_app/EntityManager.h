@@ -2,7 +2,7 @@
 
 #include <list>
 #include "Singleton.h"
-#include "entity.hpp"
+#include "Entity.h"
 
 class Bullet;
 class Enemy;

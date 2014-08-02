@@ -6,7 +6,7 @@
 #include "GLES2/gl2.h"
 #include "EGL/egl.h"
 
-#include "entity.hpp"
+#include "Entity.h"
 
 void loadPNG(
     char           *location,

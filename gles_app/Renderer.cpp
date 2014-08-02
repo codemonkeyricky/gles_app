@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "constants.hpp"
-#include "renderer.hpp"
+#include "Renderer.h"
 #include "Matrix.h"
 
 

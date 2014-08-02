@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "Input.h"
-#include "renderer.hpp"
+#include "Renderer.h"
 #include "PlayerShip.h"
 
 Input::Input()

@@ -2,7 +2,7 @@
 
 #include "IL/il.h"
 
-#include "renderer.hpp"
+#include "Renderer.h"
 
 class Entity
 {
