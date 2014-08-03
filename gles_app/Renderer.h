@@ -4,6 +4,7 @@
 #include "assert.h"
 #include "Vector.h"
 #include "Singleton.h"
+#include "Texture.h"
 
 #include "GLES2/gl2.h"
 #include "EGL/egl.h"
@@ -35,7 +36,7 @@ public:
         Vector2f   &position,
         Vector2f   &dimension,
         float       orientation,
-        GLuint      texture
+        Texture    *texture
     );
 
 

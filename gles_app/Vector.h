@@ -43,3 +43,5 @@ public:
 };
 
 Vector2f operator *(const float &s, const Vector2f &v); 
+
+typedef Vector2f Dimension2f;

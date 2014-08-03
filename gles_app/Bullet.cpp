@@ -1,6 +1,7 @@
 #include "constants.hpp"
 #include "Bullet.h"
 #include "Rect.h"
+#include "Art.h"
 
 
 Bullet::Bullet(
@@ -8,14 +9,12 @@ Bullet::Bullet(
     const Vector2f &velocity
     )
 {
-    loadTexture("C:/cygwin/home/ricky/dev/gles_app/gles_app/bullet.png");
-
-    m_position = position;
-    m_velocity = velocity;
-
-    m_orientation = atan2f(m_velocity.y, m_velocity.x);
-    m_radius = 8;
-    m_kind = kBullet;
+    m_image         = Art::getInstance()->getBullet();
+    m_position      = position;
+    m_velocity      = velocity;
+    m_orientation   = atan2f(m_velocity.y, m_velocity.x);
+    m_radius        = 8;
+    m_kind          = kBullet;
 }
 
 
@@ -37,6 +36,6 @@ void Bullet::update(
     boundary = Rectf(0, 0, (float) constants::WINDOW_WIDTH, (float) constants::WINDOW_HEIGHT);
     if(!boundary.contains(Vector2f(m_position.x, m_position.y)))
     {
-        setExpired(); // m_isExpired = true;
+        setExpired();
     }
 }

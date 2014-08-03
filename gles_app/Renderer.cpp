@@ -398,14 +398,14 @@ void Renderer::draw(
     Vector2f   &position,
     Vector2f   &dimension,
     float       orientation,
-    GLuint      texture
+    Texture    *texture
     )
 {
     sEntityAttributes   attr;
 
 
     // Set texture.
-    attr.texture = texture;
+    attr.texture = texture->m_textureID;
 
     // Push vertices.
     verticesPush(attr.vertices, position, dimension, orientation);
@@ -428,7 +428,7 @@ void Renderer::render(
     void
     )
 {
-    GLint           position, color, mvp, texCoords;
+    GLint           position, mvp, texCoords; // color, 
     float           ortho[16];
     unsigned int    i;
 
