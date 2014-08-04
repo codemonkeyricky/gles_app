@@ -36,7 +36,8 @@ public:
         Vector2f   &position,
         Vector2f   &dimension,
         float       orientation,
-        Texture    *texture
+        Texture    *texture,
+        Vector4f   &color
     );
 
 

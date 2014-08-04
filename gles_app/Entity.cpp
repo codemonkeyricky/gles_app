@@ -11,6 +11,8 @@
 Entity::Entity(
 	void
 	) :
+	m_image(NULL),
+	m_color(1,1,1,1),
 	m_position(0, 0),
 	m_velocity(0, 0),
 	m_orientation(0),
@@ -31,7 +33,7 @@ void Entity::draw(
     void
     )
 {
-	Renderer::getInstance()->draw(m_position, m_image->getSize(), m_orientation, m_image);
+	Renderer::getInstance()->draw(m_position, m_image->getSize(), m_orientation, m_image, m_color);
 }
 
 
