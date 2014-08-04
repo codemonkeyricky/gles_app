@@ -1,14 +1,20 @@
+#include "constants.hpp"
+#include "Enemy.h"
+#include "Art.h"
+#include "Math.h"
+#include "PlayerStatus.h"
+#include "PlayerShip.h"
+#include "Rect.h"
 
-
-void Enemy::AddBehavior(Behavior b)
+void Enemy::AddBehaviour(Behaviour b)
 {
     m_behaviors.push_back(b);
 }
 
 
-void Enemy::ApplyBehavior()
+void Enemy::ApplyBehaviours()
 {
-    std::list<Behavior>::iterator iter, iterNext;
+    std::list<Behaviour>::iterator iter, iterNext;
 
 
     iter = m_behaviors.begin();
@@ -40,15 +46,15 @@ void Enemy::ApplyBehavior()
 }
 
 Enemy::Enemy(
+    Texture        *image,
     const Vector2f &position
     )
 {
-#error // set texture and radius
-
-    m_position = position;
-    m_color = Color4f(0, 0, 0, 0);
-    m_kind = k_enemy;
-
+    m_image     = image;
+    m_position  = position;
+    m_radius    = image->getSurfaceSize().width / 2.0f;
+    m_color     = Color4f(0, 0, 0, 0);
+    m_kind      = kEnemy;
 }
 
 
@@ -56,10 +62,12 @@ void Enemy::update()
 {
     if(m_timeUntilStart <= 0)
     {
+        // Active enemy.
         ApplyBehaviours();
     }
     else
     {
+        // Just spawned - transition into active.
         m_timeUntilStart--;
 
         m_color = Color4f(1, 1, 1, 1) * (1.0f - (float) m_timeUntilStart / 60.0);
@@ -89,7 +97,7 @@ int Enemy::getPointValue()
 }
 
 
-Enemy * Enemy::createSeaker(const Vector2f position)
+Enemy * Enemy::createSeeker(const Vector2f &position)
 {
     Enemy * enemy = new Enemy(Art::getInstance()->getSeeker(), position);
 
@@ -100,7 +108,7 @@ Enemy * Enemy::createSeaker(const Vector2f position)
 }
 
 
-Enemy * Enemy::createWanderer(const Vector2f position)
+Enemy * Enemy::createWanderer(const Vector2f &position)
 {
     Enemy * enemy = new Enemy(Art::getInstance()->getWanderer(), position);
 
@@ -112,7 +120,7 @@ Enemy * Enemy::createWanderer(const Vector2f position)
 }
 
 
-Enemy * Enemy::handleCollision(Enemy * other)
+void Enemy::handleCollision(Enemy * other)
 {
     Vector2f d = m_position - other->m_position;
 
@@ -124,8 +132,8 @@ void Enemy::wasShot()
 {
     setExpired();
 
-    Playerstatus::getInstance()->addPoints(m_pointValue);
-    Playerstatus::getInstance()->increaseMultiplier();
+    PlayerStatus::getInstance()->addPoints(m_pointValue);
+    PlayerStatus::getInstance()->increaseMultiplier();
 
     // TODO:
 //    Sound * temp = Sound::getInstance()->getExplosion();
@@ -165,16 +173,16 @@ bool Enemy::moveRandomly()
     m_velocity += 0.4f * Vector2f(cosf(m_randomDirection), sinf(m_randomDirection));
     m_orientation -= 0.05f;
 
-    Rectf bounds        =   tRectf(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_WIDTH);
-    bounds.location.x   -=  -mImage->getSurfaceSize().width / 2.0f - 1.0f;
-    bounds.location.y   -=  -mImage->getSurfaceSize().height / 2.0f - 1.0f;
-    bounds.size.width   +=  2.0f * (-mImage->getSurfaceSize().width / 2.0f - 1.0f);
-    bounds.size.height  +=  2.0f * (-mImage->getSurfaceSize().height / 2.0f - 1.0f);
+    Rectf bounds        =   Rectf(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_WIDTH);
+    bounds.location.x   -=  -m_image->getSurfaceSize().width / 2.0f - 1.0f;
+    bounds.location.y   -=  -m_image->getSurfaceSize().height / 2.0f - 1.0f;
+    bounds.size.width   +=  2.0f * (-m_image->getSurfaceSize().width / 2.0f - 1.0f);
+    bounds.size.height  +=  2.0f * (-m_image->getSurfaceSize().height / 2.0f - 1.0f);
 
     // Make sure we stay in bound.
     if(!bounds.contains(Vector2f(m_position.x, m_position.y)))
     {
-        Vector2f temp = tVector2f(constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT) / 2.0f;
+        Vector2f temp = Vector2f(constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT) / 2.0f;
         temp -= m_position;
         m_randomDirection = atan2f(temp.y, temp.x) + Math::random() * Math::PI - Math::PI / 2.0f;
     }

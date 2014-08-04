@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Singleton.h"
+
 class EnemySpawner
     : public Singleton<EnemySpawner>
 {
@@ -13,8 +15,8 @@ protected:
     EnemySpawner();
 
 public:
-//    void update();
+    void update();
     void reset();
 
-    friend class Singleton<EnemySpawner>
+    friend class Singleton<EnemySpawner>;
 };

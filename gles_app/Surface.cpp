@@ -38,6 +38,7 @@ Surface::Surface(
     std::string path        = "C:/cygwin/home/ricky/dev/gles_app/gles_app/";
     std::string location    = path + filename;
     ILuint      texid;
+	ILboolean	status; 
 
 
     if(!m_initialized)
@@ -50,7 +51,8 @@ Surface::Surface(
 
     ilGenImages(1, &texid);
     ilBindImage(texid);
-	ilLoadImage((const wchar_t *) location.c_str());
+	status = ilLoadImage((const wchar_t *) location.c_str());
+	assert(status == IL_TRUE); 
 
     m_size.width  = (float) ilGetInteger(IL_IMAGE_WIDTH);
     m_size.height = (float) ilGetInteger(IL_IMAGE_HEIGHT);

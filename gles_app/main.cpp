@@ -4,8 +4,10 @@
 #include "Renderer.h"
 #include "Entity.h"
 #include "EntityManager.h"
+#include "PlayerStatus.h"
 #include "PlayerShip.h"
 #include "Input.h"
+#include "EnemySpawner.h"
 
 int main(
     int     argc,
@@ -15,6 +17,7 @@ int main(
 	// Instantiate renderer. 
 	Renderer::getInstance(); 
 
+
 	// Instantiate entity manager, player ship, and add it to entity manager.
     EntityManager::getInstance()->add(PlayerShip::getInstance());
 
@@ -23,8 +26,14 @@ int main(
         // Update input.
         Input::getInstance()->update();
 
+        // Update player status.
+        PlayerStatus::getInstance()->update();
+
 		// Update entities held by entity manager.
 		EntityManager::getInstance()->update(); 
+
+		// Update enemy spawner.
+		EnemySpawner::getInstance()->update();
 
 		// Draw all entities held by entity manager.
 		EntityManager::getInstance()->draw(); 

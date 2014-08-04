@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include "Singleton.h"
 
 class PlayerStatus
     : public Singleton<PlayerStatus>
@@ -11,7 +13,7 @@ protected:
 
     float   m_multiplierTimeLeft;
     int     m_lives;
-    int     m_scores;
+    int     m_score;
     int     m_highScore;
     int     m_multiplier;
     int     m_scoreForExtraLife;

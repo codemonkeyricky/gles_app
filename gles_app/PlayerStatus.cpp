@@ -1,7 +1,10 @@
+#include "PlayerShip.h"
+#include "PlayerStatus.h" 
+#include "Timer.h"
 
 const float PlayerStatus::k_multiplierExpiryTime = 0.8f;
-const float PlayerStatus::k_maxMultiplier = 20;
-const float PlayerStatus::k_highScoreFilename("highScore.txt");
+const int PlayerStatus::k_maxMultiplier = 20;
+const std::string PlayerStatus::k_highScoreFilename("highScore.txt");
 
 int PlayerStatus::LoadHighScore()
 {
@@ -32,7 +35,7 @@ PlayerStatus::PlayerStatus()
 }
 
 
-PlayerStatus::reset()
+void PlayerStatus::reset()
 {
     if(m_score > m_highScore)
     {
@@ -52,12 +55,12 @@ void PlayerStatus::update()
 {
     if(m_multiplier > 1)
     {
-        m_multiplierTimerLeft -= float(Timer::getTimeMS() - m_lastTime) / 1000.0f;
+        m_multiplierTimeLeft -= float(Timer::getTimeMS() - m_lastTime) / 1000.0f;
 
         if(m_multiplierTimeLeft <= 0)
         {
-            m_multiplierTimeLef = k_mltiplierExpryTime;
-            resetMultiPlier();
+            m_multiplierTimeLeft = k_multiplierExpiryTime;
+            resetMultiplier();
         }
     }
 
@@ -86,7 +89,7 @@ void PlayerStatus::increaseMultiplier()
     {
         m_multiplierTimeLeft = k_multiplierExpiryTime;
 
-        if(m_multiplier < k_mxaMultiplier)
+        if(m_multiplier < k_maxMultiplier)
         {
             m_multiplier++;
         }

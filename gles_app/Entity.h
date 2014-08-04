@@ -3,6 +3,7 @@
 #include "IL/il.h"
 #include "Renderer.h"
 #include "Texture.h"
+#include "Texture.h"
 
 class Entity
 {
@@ -17,7 +18,7 @@ public:
 
 protected:
     Texture    *m_image;
-//    Color4f     m_color;
+    Color4f     m_color;
     Vector2f    m_position;
     Vector2f    m_dimension;
     Vector2f    m_velocity;

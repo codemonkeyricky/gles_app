@@ -1,3 +1,11 @@
+#include "constants.hpp"
+#include "Vector.h"
+#include "Math.h"
+#include "EnemySpawner.h"
+#include "EntityManager.h"
+#include "Enemy.h"
+#include "PlayerShip.h"
+
 
 Vector2f EnemySpawner::GetSpawnPosition()
 {
@@ -6,8 +14,8 @@ Vector2f EnemySpawner::GetSpawnPosition()
 
     do
     {
-        pos = Vector2f(Math::random() * GameRoot::getInstance()->getViewportSize().width,
-                       Math::random() * GameRoot::getInstance()->getViewportSize().height);
+        pos = Vector2f(Math::random() * constants::WINDOW_WIDTH,
+                       Math::random() * constants::WINDOW_HEIGHT);
 
     } while (pos.distanceSquared(PlayerShip::getInstance()->getPosition()) < 250 * 250);
 
@@ -26,12 +34,12 @@ void EnemySpawner::update()
 {
     if(!PlayerShip::getInstance()->getIsDead() && EntityManager::getInstance()->getCount() < 200)
     {
-        if(Math::random() * m_inverseSpawnChance == 0)
+        if(int(Math::random() * m_inverseSpawnChance) == 0)
         {
             EntityManager::getInstance()->add(Enemy::createSeeker(GetSpawnPosition()));
         }
 
-        if(Math::random() * m_inverseSpawnChance == 0)
+        if(int(Math::random() * m_inverseSpawnChance) == 0)
         {
             EntityManager::getInstance()->add(Enemy::createWanderer(GetSpawnPosition()));
         }
