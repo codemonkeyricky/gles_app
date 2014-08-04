@@ -371,28 +371,14 @@ static void verticesPush(
 
 
 static void colorPush(
-    std::vector<float> &color
+    std::vector<Color4f> &color_vec, 
+	Color4f              &color
     )
 {
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
-    color.push_back(1.0f);
+    color_vec.push_back(color);
+    color_vec.push_back(color);
+    color_vec.push_back(color);
+    color_vec.push_back(color);
 }
 
 
@@ -415,7 +401,7 @@ void Renderer::draw(
     Vector2f   &dimension,
     float       orientation,
     Texture    *texture,
-    Vector4f   &color
+    Color4f    &color
     )
 {
     sEntityAttributes   attr;
@@ -431,7 +417,7 @@ void Renderer::draw(
     texCoordsPush(attr.texCoords);
 
     // Push color
-    colorPush(attr.colors);
+    colorPush(attr.colors, color);
 
     // Push indices.
     indicesPush(attr.indices);

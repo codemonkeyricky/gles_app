@@ -16,7 +16,7 @@ typedef struct
     std::vector<float>          texCoords;
     std::vector<unsigned short> indices;
     std::vector<Vector2f>       vertices;
-    std::vector<float>          colors;
+    std::vector<Color4f>        colors;
 
 } sEntityAttributes;
 

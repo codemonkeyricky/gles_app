@@ -48,7 +48,7 @@ void Enemy::ApplyBehaviours()
 Enemy::Enemy(
     Texture        *image,
     const Vector2f &position
-    )
+    ) : m_timeUntilStart(60)
 {
     m_image     = image;
     m_position  = position;
