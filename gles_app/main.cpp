@@ -17,7 +17,6 @@ int main(
 	// Instantiate renderer. 
 	Renderer::getInstance(); 
 
-
 	// Instantiate entity manager, player ship, and add it to entity manager.
     EntityManager::getInstance()->add(PlayerShip::getInstance());
 

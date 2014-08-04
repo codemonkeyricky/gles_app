@@ -377,6 +377,22 @@ static void colorPush(
     color.push_back(1.0f);
     color.push_back(1.0f);
     color.push_back(1.0f);
+    color.push_back(1.0f);
+
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
+    color.push_back(1.0f);
 }
 
 
@@ -429,7 +445,7 @@ void Renderer::render(
     void
     )
 {
-    GLint           position, mvp, texCoords; // color, 
+    GLint           position, mvp, texCoords, color; 
     float           ortho[16];
     unsigned int    i;
 
@@ -460,15 +476,15 @@ void Renderer::render(
         position = glGetAttribLocation(m_uiProgram, "mPosition");
         assert(position != -1);
 
-//        color = glGetAttribLocation(m_uiProgram, "av3colour");
-//        assert(color != -1);
+        color = glGetAttribLocation(m_uiProgram, "mColor");
+        assert(color != -1);
 
         texCoords = glGetAttribLocation(m_uiProgram, "mTexCoords");
         assert(texCoords != -1);
         
         // Enable attributes.
         glEnableVertexAttribArray(position);
-//        glEnableVertexAttribArray(color);
+        glEnableVertexAttribArray(color);
         glEnableVertexAttribArray(texCoords);
 
         // Set attributes.
@@ -479,12 +495,12 @@ void Renderer::render(
                               0,
                               &m_entityAttributes[i].vertices[0]);
 
-//        glVertexAttribPointer(color,
-//                              3,
-//                              GL_FLOAT,
-//                              GL_FALSE,
-//                              0,
-//                              &m_entityAttributes[i].colors[0]);
+        glVertexAttribPointer(color,
+                              4,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              0,
+                              &m_entityAttributes[i].colors[0]);
 
         glVertexAttribPointer(texCoords,
                               2,
