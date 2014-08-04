@@ -24,7 +24,7 @@ public:
     Vector2f operator *(const float &b) const { return Vector2f(x * b, y * b); }
 
     bool operator ==(const Vector2f &b) const { return (x == b.x) && (y == b.y); }
-    bool operator !=(const Vector2f &b) const { return *this != b; }
+    bool operator !=(const Vector2f &b) const { return !(*this == b); }
 
     Vector2f& operator +=(const Vector2f &b) { *this = *this + b; return *this; }
     Vector2f& operator -=(const Vector2f &b) { *this = *this - b; return *this; }

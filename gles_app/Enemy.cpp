@@ -154,7 +154,7 @@ bool Enemy::followPlayer(float acceleration)
         m_velocity += temp;
     }
 
-    if(m_velocity != Vector2f(0, 0))
+    if(m_velocity != Vector2f(0.0f, 0.0f))
     {
         m_orientation = atan2f(m_velocity.y, m_velocity.x);
     }
