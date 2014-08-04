@@ -3,17 +3,18 @@
 #include <list>
 #include "Singleton.h"
 #include "Entity.h"
+#include "Enemy.h"
+#include "Bullet.h"
 
-class Bullet;
-class Enemy;
 
 class EntityManager
     : public Singleton<EntityManager>
 {
 protected:
-    std::list<Entity *>    m_entities;
-    std::list<Entity *>    m_addedEntities;
-    std::list<Bullet *>    m_bullets;
+    std::list<Entity *> m_entities;
+    std::list<Entity *> m_addedEntities;
+    std::list<Bullet *> m_bullets;
+    std::list<Enemy *>  m_enemies;
     bool m_isUpdating;
 
 protected:
@@ -28,7 +29,9 @@ public:
     void update();
     void draw();
 
+    void handleCollisions();
     bool isColliding(Entity *a, Entity *b);
+//    bool isColliding(const Entity *a, const Entity *b);
 
 	friend class Singleton<EntityManager>;
 };
