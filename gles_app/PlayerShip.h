@@ -11,8 +11,8 @@ class PlayerShip
 protected:
     static const int kCooldownFrames;
 
-    int mCooldownRemaining;
-    int mFramesUntilRespawn;
+    int m_cooldownRemaining;
+    int m_framesUntilRespawn;
 
 protected:
     PlayerShip();

@@ -6,12 +6,13 @@
 #include "Matrix.h"
 #include "Input.h"
 #include "Art.h"
+#include "PlayerStatus.h"
 
 const int PlayerShip::kCooldownFrames = 6;
 
 PlayerShip::PlayerShip()
-    : mCooldownRemaining(0),
-      mFramesUntilRespawn(0)
+    : m_cooldownRemaining(0),
+      m_framesUntilRespawn(0)
 {
     m_image     = Art::getInstance()->getPlayer();
     m_position  = Vector2f(constants::WINDOW_WIDTH/2, constants::WINDOW_HEIGHT/2);
@@ -24,21 +25,29 @@ void PlayerShip::update()
     if(getIsDead())
     {
         // Decrement frames.
-        mFramesUntilRespawn--;
+        m_framesUntilRespawn--;
+//        if(mFramesUntilRespawn == 0)
+//        {
+//            if (PlayerStatus::getInstance()->getLives() == 0)
+//            {
+//                PlayerStatus::getInstance()->reset();
+//                mPosition = tVector2f(GameRoot::getInstance()->getViewportSize().width / 2.0f,
+//                                      GameRoot::getInstance()->getViewportSize().height / 2.0f);
+//            }
+//        }
     }
     else
     {
         // Get aim direction.
-		Vector2f aim = Input::getInstance()->getMouseAimDirection();
+		Vector2f aim = Input::getInstance()->getAimDirection();
 
-        if(aim.lengthSquared() > 0 && mCooldownRemaining <= 0)
+        if(aim.lengthSquared() > 0 && m_cooldownRemaining <= 0)
         {
-            mCooldownRemaining = kCooldownFrames;
+            m_cooldownRemaining = kCooldownFrames;
             float aimAngle = atan2f(aim.y, aim.x);
 
             float cosA = cosf(aimAngle);
             float sinA = sinf(aimAngle);
-
             Matrix2x2f aimMat(Vector2f(cosA, sinA),
                               Vector2f(-sinA, cosA));
 
@@ -59,25 +68,24 @@ void PlayerShip::update()
 //            }
         }
 
-        if(mCooldownRemaining > 0)
+        if(m_cooldownRemaining > 0)
         {
-            mCooldownRemaining--;
+            m_cooldownRemaining--;
         }
 
         const float kSpeed = 8;
 
-		Vector2f temp = kSpeed * Input::getInstance()->getMovementDirection();
-        m_velocity = m_velocity + temp;
-        m_position = m_position + m_velocity;
-
-        // TODO:
-//        mPosition = tVector2f(tMath::clamp(mPosition.x, (float)getSize().x / 2.0f, (float)GameRoot::getInstance()->getViewportSize().x - getSize().x / 2),
-//                              tMath::clamp(mPosition.y, (float)getSize().y / 2.0f, (float)GameRoot::getInstance()->getViewportSize().y - getSize().y / 2));
+		m_velocity += kSpeed * Input::getInstance()->getMovementDirection();
+        m_position += m_velocity;
+		m_position = Vector2f(Math::clamp(m_position.x, (float) getSize().x / 2.0f, (float) constants::WINDOW_WIDTH - getSize().x / 2),
+                              Math::clamp(m_position.y, (float) getSize().y / 2.0f, (float) constants::WINDOW_HEIGHT - getSize().y / 2));
 
         if(m_position.lengthSquared() > 0)
         {
             m_orientation = atan2f(m_velocity.y, m_velocity.x);
         }
+
+		m_velocity = Vector2f(0, 0); 
     }
 }
 
@@ -93,11 +101,13 @@ void PlayerShip::draw()
 
 bool PlayerShip::getIsDead()
 {
-    return mFramesUntilRespawn > 0;
+    return m_framesUntilRespawn > 0;
 }
 
 
 void PlayerShip::kill()
 {
-    mFramesUntilRespawn = 60;
+//    PlayerStatus::getInstance()->removeLife();
+
+    m_framesUntilRespawn = 60;
 }
