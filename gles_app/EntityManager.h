@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Enemy.h"
 #include "Bullet.h"
+#include "BlackHole.h"
 
 
 class EntityManager
@@ -15,7 +16,11 @@ protected:
     std::list<Entity *> m_addedEntities;
     std::list<Bullet *> m_bullets;
     std::list<Enemy *>  m_enemies;
+    std::list<BlackHole *>  m_blackHoles;
     bool m_isUpdating;
+
+protected:
+    void KillPlayer();
 
 protected:
     EntityManager();
@@ -31,7 +36,13 @@ public:
 
     void handleCollisions();
     bool isColliding(Entity *a, Entity *b);
-//    bool isColliding(const Entity *a, const Entity *b);
+    std::list<Entity*> EntityManager::getNearbyEntities(
+        const Vector2f &pos,
+        float           radius
+    );
+
+    unsigned int getBlackHoleCount() const;
+    std::list<BlackHole*> getBlackHoles() const;
 
 	friend class Singleton<EntityManager>;
 };

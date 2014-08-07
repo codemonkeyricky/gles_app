@@ -12,6 +12,7 @@ protected:
     Texture *m_wanderer;
     Texture *m_bullet;
     Texture *m_pointer;
+    Texture *m_blackHole;
     Texture *m_fontTexture;
 
 protected:
@@ -23,6 +24,7 @@ public:
     Texture *getWanderer() const;
     Texture *getBullet() const;
     Texture *getPointer() const;
+    Texture *getBlackHole() const;
 
 //    tSpriteFont getFont() const;
 

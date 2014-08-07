@@ -12,6 +12,30 @@ EntityManager::EntityManager()
 }
 
 
+void EntityManager::KillPlayer()
+{
+    PlayerShip::getInstance()->kill();
+
+    // Remove all enemies.
+    for(std::list<Enemy*>::iterator j = m_enemies.begin();
+        j != m_enemies.end();
+        j++)
+    {
+        (*j)->wasShot();
+    }
+
+    // Remove all blackholes.
+    for(std::list<BlackHole*>::iterator j = m_blackHoles.begin();
+        j != m_blackHoles.end();
+        j++)
+    {
+        (*j)->kill();
+    }
+
+    EnemySpawner::getInstance()->reset();
+}
+
+
 int EntityManager::getCount() const
 {
     return (int) m_entities.size();
@@ -43,6 +67,7 @@ void EntityManager::addEntity(
     {
     case Entity::kBullet: m_bullets.push_back((Bullet *) entity); break; 
 	case Entity::kEnemy: m_enemies.push_back((Enemy *) entity); break; 
+	case Entity::kBlackHole: m_blackHoles.push_back((BlackHole *) entity); break;
     default: break;
     }
 }
@@ -107,6 +132,19 @@ void EntityManager::update()
         }
     }
     m_enemies.remove(NULL);
+
+    // Walk the enemies list.
+    for(std::list<BlackHole *>::iterator iter = m_blackHoles.begin();
+        iter != m_blackHoles.end();
+        iter++)
+    {
+        if((*iter)->isExpired())
+        {
+            delete *iter;
+            *iter = NULL;
+        }
+    }
+    m_blackHoles.remove(NULL);
 }
 
 
@@ -175,4 +213,73 @@ void EntityManager::handleCollisions()
             break;
         }
     }
+
+    // Determine enemy crashing into player.
+    for(std::list<BlackHole *>::iterator i = m_blackHoles.begin(); i != m_blackHoles.end(); i++)
+    {
+        // Kill enemies in the way.
+        for(std::list<Enemy*>::iterator j = m_enemies.begin();
+            j != m_enemies.end();
+            j++)
+        {
+            if((*j)->getIsActive() && isColliding(*i, *j))
+            {
+                (*j)->wasShot();
+            }
+        }
+
+        // Kill bullets in the way.
+        for(std::list<Bullet*>::iterator j = m_bullets.begin();
+            j != m_bullets.end();
+            j++)
+        {
+            if(isColliding(*i, *j))
+            {
+                (*j)->setExpired();
+                (*i)->wasShot();
+            }
+        }
+
+        // Kill player if collide.
+        if(isColliding(PlayerShip::getInstance(), *i))
+        {
+            KillPlayer();
+        }
+    }
+}
+
+
+std::list<Entity*> EntityManager::getNearbyEntities(
+    const Vector2f &pos,
+    float           radius
+    )
+{
+    std::list<Entity*> result;
+
+    for(std::list<Entity*>::iterator iter = m_entities.begin();
+        iter != m_entities.end();
+        iter++)
+    {
+        if(*iter)
+        {
+            if(pos.distanceSquared((*iter)->getPosition()) < radius * radius)
+            {
+                result.push_back(*iter);
+            }
+        }
+    }
+
+    return result;
+}
+
+
+unsigned int EntityManager::getBlackHoleCount() const
+{
+    return m_blackHoles.size();
+}
+
+
+std::list<BlackHole*> EntityManager::getBlackHoles() const
+{
+    return m_blackHoles;
 }

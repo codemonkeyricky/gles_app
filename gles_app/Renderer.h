@@ -40,6 +40,14 @@ public:
         Vector4f   &color
     );
 
+    void Renderer::draw(
+        Vector2f   &position,
+        Vector2f   &dimension,
+        float       orientation,
+        Texture    *texture,
+        Color4f    &color,
+        float       scale
+    );
 
 private:
     EGLDisplay  m_sEGLDisplay;

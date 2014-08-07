@@ -7,6 +7,7 @@ class EnemySpawner
 {
 protected:
     float m_inverseSpawnChance;
+    float m_inverseBlackHoleChance;
 
 protected:
     Vector2f GetSpawnPosition();

@@ -24,7 +24,8 @@ Vector2f EnemySpawner::GetSpawnPosition()
 
 
 EnemySpawner::EnemySpawner()
-    : m_inverseSpawnChance(90)
+    : m_inverseSpawnChance(90),
+      m_inverseBlackHoleChance(600)
 {
 
 }
@@ -42,6 +43,12 @@ void EnemySpawner::update()
         if(int(Math::random() * m_inverseSpawnChance) == 0)
         {
             EntityManager::getInstance()->add(Enemy::createWanderer(GetSpawnPosition()));
+        }
+
+        if(   (EntityManager::getInstance()->getBlackHoleCount() < 2)
+           && (int(Math::random() * m_inverseBlackHoleChance) == 0))
+        {
+            EntityManager::getInstance()->add(new BlackHole(GetSpawnPosition()));
         }
     }
 

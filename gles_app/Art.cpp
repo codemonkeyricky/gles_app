@@ -9,6 +9,7 @@ Art::Art()
     m_wanderer = new Texture(Surface("wanderer.png"));
     m_bullet = new Texture(Surface("bullet.png"));
     m_pointer = new Texture(Surface("pointer.png"));
+    m_blackHole = new Texture(Surface("blackhole.png"));
 
     // m_fontTexture = new Texture(Surface("font.png"));
 }
@@ -41,6 +42,12 @@ Texture * Art::getBullet() const
 Texture * Art::getPointer() const
 {
     return m_bullet;
+}
+
+
+Texture * Art::getBlackHole() const
+{
+    return m_blackHole;
 }
 
 

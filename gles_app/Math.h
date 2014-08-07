@@ -31,12 +31,12 @@ public:
     {
         return (x > y) ? x : y;
     }
+#endif
     
     static float mix(float const & x, float const & y, float const & a)
     {
         return float(float(x) + a * float(y - x));
     }
-#endif
 
     static float random();
 
