@@ -34,6 +34,7 @@ public:
 public:
     // Constructors.
     explicit Vector2f() : x(0), y(0) { }
+    explicit Vector2f(const float& n) : x(n), y(n) { }
     explicit Vector2f(const float &nx, const float &ny) : x(nx), y(ny) {}
 
 public:
@@ -46,6 +47,61 @@ public:
 };
 
 Vector2f operator *(const float &s, const Vector2f &v); 
+
+
+class Vector3f
+{
+public:
+    union
+    {
+        float value[3];
+        struct { float x, y, z; };
+        struct { float r, g, b; };
+        struct { float s, t, p; };
+        struct { float width, height, depth; };
+    };
+
+    //Array subscript operator
+    float& operator [](const size_t i) { assert(i < 3); return value[i]; }
+    const float& operator [](const size_t i) const { assert(i < 3); return value[i]; }
+
+    //Arithmetic operators
+    Vector3f operator +(const Vector3f& b) const { return Vector3f(x + b.x, y + b.y, z + b.z); }
+    Vector3f operator -(const Vector3f& b) const { return Vector3f(x - b.x, y - b.y, z - b.z); }
+    Vector3f operator *(const Vector3f& b) const { return Vector3f(x * b.x, y * b.y, z * b.z); }
+    Vector3f operator /(const Vector3f& b) const { return Vector3f(x / b.x, y / b.y, z / b.z); }
+    Vector3f operator -() const /* Unary minus */ { return Vector3f(-x, -y, -z); }
+    Vector3f operator *(const float& b) const { return Vector3f(x * b, y * b, z * b); }
+    Vector3f operator /(const float& b) const { return Vector3f(x / b, y / b, z / b); }
+
+    bool operator ==(const Vector3f& b) const { return (x == b.x) && (y == b.y) && (z == b.z); }
+    bool operator !=(const Vector3f& b) const { return !(*this == b); }
+
+    //Arithmetic assignment operators
+    Vector3f& operator +=(const Vector3f& b) { *this = *this + b; return *this; }
+    Vector3f& operator -=(const Vector3f& b) { *this = *this - b; return *this; }
+    Vector3f& operator *=(const Vector3f& b) { *this = *this * b; return *this; }
+    Vector3f& operator /=(const Vector3f& b) { *this = *this / b; return *this; }
+    Vector3f& operator *=(const float& b) { *this = *this * b; return *this; }
+    Vector3f& operator /=(const float& b) { *this = *this / b; return *this; }
+
+public:
+    explicit Vector3f() : x(0), y(0), z(0) { }
+    explicit Vector3f(const float& n) : x(n), y(n), z(n) { }
+    explicit Vector3f(const float& nx, const float& ny, const float& nz) : x(nx), y(ny), z(nz) { }
+
+public:
+    // Geometric functions
+    float       length() const;
+    float       lengthSquared() const;
+    float       distanceSquared(const Vector3f &p1) const;
+    float       distance(const Vector3f &p1) const;
+    float       dot(const Vector3f &v2) const;
+    Vector3f   cross(const Vector3f &y) const;
+    Vector3f   normalize() const;
+};
+
+Vector3f operator* (const float &s, const Vector3f &v);
 
 typedef Vector2f Dimension2f;
 

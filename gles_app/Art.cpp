@@ -4,12 +4,15 @@
 
 Art::Art()
 {
-    m_player = new Texture(Surface("player.png"));
-    m_seeker = new Texture(Surface("seeker.png"));
-    m_wanderer = new Texture(Surface("wanderer.png"));
-    m_bullet = new Texture(Surface("bullet.png"));
-    m_pointer = new Texture(Surface("pointer.png"));
-    m_blackHole = new Texture(Surface("blackhole.png"));
+    m_player        = new Texture(Surface("player.png"));
+    m_seeker        = new Texture(Surface("seeker.png"));
+    m_wanderer      = new Texture(Surface("wanderer.png"));
+    m_bullet        = new Texture(Surface("bullet.png"));
+    m_pointer       = new Texture(Surface("pointer.png"));
+    m_blackHole     = new Texture(Surface("blackhole.png"));
+
+    m_lineParticle  = new Texture(Surface("laser.png"));
+    m_glow          = new Texture(Surface("glow.png"));
 
     // m_fontTexture = new Texture(Surface("font.png"));
 }
@@ -50,6 +53,17 @@ Texture * Art::getBlackHole() const
     return m_blackHole;
 }
 
+
+Texture * Art::getLineParticle() const
+{
+    return m_lineParticle;
+}
+
+
+Texture * Art::getGlow() const
+{
+    return m_glow;
+}
 
 //Texture * Art::getFont() const
 //{

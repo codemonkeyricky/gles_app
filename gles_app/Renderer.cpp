@@ -414,6 +414,19 @@ void Renderer::draw(
     Vector2f   &dimension,
     float       orientation,
     Texture    *texture,
+    Color4f    &color,
+    Vector2f    scale
+    )
+{
+    draw(position, dimension * scale, orientation, texture, color);
+}
+
+
+void Renderer::draw(
+    Vector2f   &position,
+    Vector2f   &dimension,
+    float       orientation,
+    Texture    *texture,
     Color4f    &color
     )
 {

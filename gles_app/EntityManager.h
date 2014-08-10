@@ -12,12 +12,12 @@ class EntityManager
     : public Singleton<EntityManager>
 {
 protected:
-    std::list<Entity *> m_entities;
-    std::list<Entity *> m_addedEntities;
-    std::list<Bullet *> m_bullets;
-    std::list<Enemy *>  m_enemies;
+    std::list<Entity *>     m_entities;
+    std::list<Entity *>     m_addedEntities;
+    std::list<Bullet *>     m_bullets;
+    std::list<Enemy *>      m_enemies;
     std::list<BlackHole *>  m_blackHoles;
-    bool m_isUpdating;
+    bool                    m_isUpdating;
 
 protected:
     void KillPlayer();
@@ -45,4 +45,5 @@ public:
     std::list<BlackHole*> getBlackHoles() const;
 
 	friend class Singleton<EntityManager>;
+	friend class ParticleState;
 };

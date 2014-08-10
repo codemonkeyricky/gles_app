@@ -7,8 +7,81 @@
 #include "Input.h"
 #include "Art.h"
 #include "PlayerStatus.h"
+#include "Extensions.h"
+#include "Timer.h"
+#include "ParticleManager.h"
+
 
 const int PlayerShip::kCooldownFrames = 6;
+
+void PlayerShip::MakeExhaustFire()
+{
+    if(m_velocity.lengthSquared() > 0.1f)
+    {
+        m_orientation = Extensions::toAngle(m_velocity);
+
+        float cosA = cosf(m_orientation);
+        float sinA = sinf(m_orientation);
+
+        Matrix2x2f rot(Vector2f(cosA, sinA),
+                       Vector2f(-sinA, cosA));
+
+        float t = Timer::getTimeMS() / 1000.0f;
+
+        Vector2f baseVel = Extensions::scaleTo(m_velocity, -3);
+
+        Vector2f perpVel = Vector2f(baseVel.y, -baseVel.x) * (0.6f * (float)sinf(t*10.0f));
+        Color4f sideColor(0.78f, 0.15f, 0.04f, 1);
+        Color4f midColor(1.0f, 0.73f, 0.12f, 1);
+        Vector2f pos = m_position + rot * Vector2f(-25, 0);    // position of the ship's exhaust pipe.
+        const float alpha = 0.7f;
+
+        // middle particle stream
+        Vector2f velMid = baseVel + Extensions::nextVector2(0, 1);
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getLineParticle(),
+                                                       pos,
+                                                       Color4f(1,1,1,1) * alpha,
+                                                       60.0f,
+                                                       Vector2f(0.5f, 1),
+                                                       ParticleState(velMid, ParticleState::kEnemy));
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getGlow(),
+                                                       pos,
+                                                       midColor * alpha,
+                                                       60.0f,
+                                                       Vector2f(0.5f, 1),
+                                                       ParticleState(velMid, ParticleState::kEnemy));
+
+        // side particle streams
+        Vector2f vel1 = baseVel + perpVel + Extensions::nextVector2(0, 0.3f);
+        Vector2f vel2 = baseVel - perpVel + Extensions::nextVector2(0, 0.3f);
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getLineParticle(),
+                                                       pos,
+                                                       Color4f(1,1,1,1) * alpha,
+                                                       60.0f,
+                                                       Vector2f(0.5f, 1),
+                                                       ParticleState(vel1, ParticleState::kEnemy));
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getLineParticle(),
+                                                       pos,
+                                                       Color4f(1,1,1,1) * alpha,
+                                                       60.0f,
+                                                       Vector2f(0.5f, 1),
+                                                       ParticleState(vel2, ParticleState::kEnemy));
+
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getGlow(),
+                                                       pos,
+                                                       sideColor * alpha,
+                                                       60.0f,
+                                                       Vector2f(0.5f, 1),
+                                                       ParticleState(vel1, ParticleState::kEnemy));
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getGlow(),
+                                                       pos,
+                                                       sideColor * alpha,
+                                                       60.0f,
+                                                       Vector2f(0.5f, 1),
+                                                       ParticleState(vel2, ParticleState::kEnemy));
+    }
+}
+
 
 PlayerShip::PlayerShip()
     : m_cooldownRemaining(0),
@@ -84,6 +157,8 @@ void PlayerShip::update()
         {
             m_orientation = atan2f(m_velocity.y, m_velocity.x);
         }
+
+        MakeExhaustFire();
 
 		m_velocity = Vector2f(0, 0); 
     }

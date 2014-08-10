@@ -16,6 +16,7 @@ protected:
 
 protected:
     PlayerShip();
+    void MakeExhaustFire();
 
 public:
     void update();
