@@ -46,6 +46,15 @@ public:
         float       orientation,
         Texture    *texture,
         Color4f    &color,
+        Vector2f    scale
+    );
+
+    void draw(
+        Vector2f   &position,
+        Vector2f   &dimension,
+        float       orientation,
+        Texture    *texture,
+        Color4f    &color,
         float       scale
     );
 

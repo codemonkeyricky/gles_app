@@ -14,6 +14,8 @@ protected:
     Texture *m_pointer;
     Texture *m_blackHole;
     Texture *m_fontTexture;
+    Texture *m_lineParticle;
+    Texture *m_glow;
 
 protected:
     Art();
@@ -25,6 +27,8 @@ public:
     Texture *getBullet() const;
     Texture *getPointer() const;
     Texture *getBlackHole() const;
+    Texture *getLineParticle() const;
+    Texture *getGlow() const;
 
 //    tSpriteFont getFont() const;
 

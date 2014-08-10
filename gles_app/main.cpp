@@ -8,6 +8,7 @@
 #include "PlayerShip.h"
 #include "Input.h"
 #include "EnemySpawner.h"
+#include "ParticleManager.h"
 
 int main(
     int     argc,
@@ -34,13 +35,19 @@ int main(
 		// Update enemy spawner.
 		EnemySpawner::getInstance()->update();
 
+		// Update particle instance.
+		ParticleManager::getInstance()->update();
+
 		// Draw all entities held by entity manager.
 		EntityManager::getInstance()->draw(); 
+
+		// Draw all particles.
+		ParticleManager::getInstance()->draw();
 
 		// Kick the renderer.
 		Renderer::getInstance()->render();
 
-        Sleep(20);
+//        Sleep(20);
     }
 
     return 0;

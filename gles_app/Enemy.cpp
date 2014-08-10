@@ -5,6 +5,11 @@
 #include "PlayerStatus.h"
 #include "PlayerShip.h"
 #include "Rect.h"
+#include "Extensions.h"
+#include "ColorUtil.h"
+#include "ParticleState.h"
+#include "ParticleManager.h"
+
 
 void Enemy::AddBehaviour(Behaviour b)
 {
@@ -134,6 +139,25 @@ void Enemy::wasShot()
 
     PlayerStatus::getInstance()->addPoints(m_pointValue);
     PlayerStatus::getInstance()->increaseMultiplier();
+
+    float hue1 = Extensions::nextFloat(0, 6);
+    float hue2 = fmodf(hue1 + Extensions::nextFloat(0, 2), 6.0f);
+    Color4f color1 = ColorUtil::HSVToColor(hue1, 0.5f, 1);
+    Color4f color2 = ColorUtil::HSVToColor(hue2, 0.5f, 1);
+
+    for(int i = 0; i < 120; i++)
+    {
+        float speed = 18.0f * (1.0f - 1 / Extensions::nextFloat(1, 10));
+        ParticleState state(Extensions::nextVector2(speed, speed), ParticleState::kEnemy, 1);
+
+        Color4f color = Extensions::colorLerp(color1, color2, Extensions::nextFloat(0, 1));
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getLineParticle(),
+                                                       m_position,
+                                                       color,
+                                                       190,
+                                                       1.5f,
+                                                       state);
+    }
 
     // TODO:
 //    Sound * temp = Sound::getInstance()->getExplosion();
