@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <utility>
 #include "assert.h"
 #include "Vector.h"
 #include "Singleton.h"
@@ -10,20 +12,26 @@
 #include "EGL/egl.h"
 
 
-typedef struct
-{
-    GLuint                      texture;
-    std::vector<float>          texCoords;
-    std::vector<unsigned short> indices;
-    std::vector<Vector2f>       vertices;
-    std::vector<Color4f>        colors;
-
-} sEntityAttributes;
-
-
-class Renderer 
+class Renderer
 	: public Singleton<Renderer>
 {
+public:
+
+    class Value
+    {
+    public:
+        std::vector<float>          texCoords;
+        std::vector<unsigned short> indices;
+        std::vector<Vector2f>       vertices;
+        std::vector<Color4f>        colors;
+
+    public:
+        Value() { }
+    };
+
+protected:
+    std::map<Texture *, Value> m_steps;
+
 public:
     Renderer();
     virtual ~Renderer();
@@ -67,9 +75,8 @@ private:
     GLuint      m_uiProgram, m_uiFragShader, m_uiVertShader;
     GLuint      m_textureId;
 
-    std::vector<sEntityAttributes>  m_entityAttributes;
+//    std::vector<sEntityAttributes>  m_entityAttributes;
 
 	friend class Singleton<Renderer>; 
-
 	friend class Input;
 };

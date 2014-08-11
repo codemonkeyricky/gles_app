@@ -47,7 +47,7 @@ int main(
 		// Kick the renderer.
 		Renderer::getInstance()->render();
 
-//        Sleep(20);
+        Sleep(20);
     }
 
     return 0;
