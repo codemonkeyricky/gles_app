@@ -15,10 +15,10 @@ int main(
     char  **argv
     )
 {
-	// Instantiate renderer. 
-	Renderer::getInstance(); 
+    // Instantiate renderer. 
+    Renderer::getInstance(); 
 
-	// Instantiate entity manager, player ship, and add it to entity manager.
+    // Instantiate entity manager, player ship, and add it to entity manager.
     EntityManager::getInstance()->add(PlayerShip::getInstance());
 
     while(1) 
@@ -29,25 +29,25 @@ int main(
         // Update player status.
         PlayerStatus::getInstance()->update();
 
-		// Update entities held by entity manager.
-		EntityManager::getInstance()->update(); 
+        // Update entities held by entity manager.
+        EntityManager::getInstance()->update(); 
 
-		// Update enemy spawner.
-		EnemySpawner::getInstance()->update();
+        // Update enemy spawner.
+        EnemySpawner::getInstance()->update();
 
-		// Update particle instance.
-		ParticleManager::getInstance()->update();
+        // Update particle instance.
+        ParticleManager::getInstance()->update();
 
-		// Draw all entities held by entity manager.
-		EntityManager::getInstance()->draw(); 
+        // Draw all entities held by entity manager.
+        EntityManager::getInstance()->draw(); 
 
-		// Draw all particles.
-		ParticleManager::getInstance()->draw();
+        // Draw all particles.
+        ParticleManager::getInstance()->draw();
 
-		// Kick the renderer.
-		Renderer::getInstance()->render();
+        // Kick the renderer.
+        Renderer::getInstance()->render();
 
-//        Sleep(20);
+        Sleep(20);
     }
 
     return 0;

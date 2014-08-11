@@ -126,9 +126,9 @@ void process_shader(
 
     /* Create shader and load into GL. */
     *pShader = glCreateShader(iShaderType);
-
+    
     aStrings[0] = load_shader(sFilename);
-
+    
     // Set shader source.
     glShaderSource(*pShader, 1, aStrings, NULL);
 
@@ -158,17 +158,17 @@ void process_shader(
         sDebugSource = malloc(iLen);
 
         GL_CHECK(glGetShaderSource(*pShader, iLen, NULL, sDebugSource));
-
+        
         printf("Debug source START:\n%s\nDebug source END\n\n", sDebugSource);
         free(sDebugSource);
 
         /* Now get the info log. */
         GL_CHECK(glGetShaderiv(*pShader, GL_INFO_LOG_LENGTH, &iLen));
-
+        
         sErrorLog = malloc(iLen);
-
+        
         GL_CHECK(glGetShaderInfoLog(*pShader, iLen, NULL, sErrorLog));
-
+        
         printf("Log START:\n%s\nLog END\n\n", sErrorLog);
         free(sErrorLog);
 #endif
@@ -281,8 +281,6 @@ Renderer::Renderer(
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-
-    m_entityAttributes.clear();
 }
 
 
@@ -315,32 +313,32 @@ void Renderer::entityRemove()
 
 
 static void texCoordsPush(
-    std::vector<float> &texCoords
+    Renderer::Value   &ref
     )
 {
     // Point 1.
-    texCoords.push_back(0.0f);
-    texCoords.push_back(0.0f);
+    ref.texCoords.push_back(0.0f);
+    ref.texCoords.push_back(0.0f);
 
     // Point 2.
-    texCoords.push_back(1.0f);
-    texCoords.push_back(0.0f);
+    ref.texCoords.push_back(1.0f);
+    ref.texCoords.push_back(0.0f);
 
     // Point 3.
-    texCoords.push_back(1.0f);
-    texCoords.push_back(1.0f);
+    ref.texCoords.push_back(1.0f);
+    ref.texCoords.push_back(1.0f);
 
     // Point 4.
-    texCoords.push_back(0.0f);
-    texCoords.push_back(1.0f);
+    ref.texCoords.push_back(0.0f);
+    ref.texCoords.push_back(1.0f);
 }
 
 
 static void verticesPush(
-    std::vector<Vector2f>  &vertices,
-    Vector2f               &position,
-    Vector2f               &dimension,
-    float                   orientation
+    Renderer::Value    &ref,
+    Vector2f           &position,
+    Vector2f           &dimension,
+    float               orientation
   )
 {
     float       co = cosf(orientation);
@@ -350,49 +348,54 @@ static void verticesPush(
     unsigned    int curr;
 
 
-    curr = vertices.size();
+    curr = ref.vertices.size();
 
-    vertices.push_back(position);
-    vertices.push_back(Vector2f((float)(position.x + dimension.x), (float) position.y));
-    vertices.push_back(position + dimension);
-    vertices.push_back(Vector2f((float) position.x, (float)(position.y + dimension.y)));
+    ref.vertices.push_back(position);
+    ref.vertices.push_back(Vector2f((float)(position.x + dimension.x), (float) position.y));
+    ref.vertices.push_back(position + dimension);
+    ref.vertices.push_back(Vector2f((float) position.x, (float)(position.y + dimension.y)));
 
     for(i = 0; i < 4; i++)
     {
-        Vector2f in = vertices[curr + i]
+        Vector2f in = ref.vertices[curr + i]
                                 - position
                                 - dimension/2;
 
         Vector2f out = in * rotMatrix;
 
-        vertices[curr + i] = out + position;
+        ref.vertices[curr + i] = out + position;
     }
 }
 
 
 static void colorPush(
-    std::vector<Color4f> &color_vec, 
-    Color4f              &color
+    Renderer::Value    &ref,
+    Color4f            &color
     )
 {
-    color_vec.push_back(color);
-    color_vec.push_back(color);
-    color_vec.push_back(color);
-    color_vec.push_back(color);
+    ref.colors.push_back(color);
+    ref.colors.push_back(color);
+    ref.colors.push_back(color);
+    ref.colors.push_back(color);
 }
 
 
 static void indicesPush(
-    std::vector<unsigned short> &indices
+    Renderer::Value   &ref
     )
 {
-    indices.push_back(0);
-    indices.push_back(2);
-    indices.push_back(1);
+    size_t curr;
 
-    indices.push_back(0);
-    indices.push_back(3);
-    indices.push_back(2);
+
+    curr = ref.vertices.size();
+
+    ref.indices.push_back(curr + 0);
+    ref.indices.push_back(curr + 2);
+    ref.indices.push_back(curr + 1);
+
+    ref.indices.push_back(curr + 0);
+    ref.indices.push_back(curr + 3);
+    ref.indices.push_back(curr + 2);
 }
 
 
@@ -430,26 +433,20 @@ void Renderer::draw(
     Color4f    &color
     )
 {
-    sEntityAttributes   attr;
+    Value &ref = m_steps[texture];
 
-
-    // Set texture.
-    attr.texture = texture->m_textureID;
-
-    // Push vertices.
-    verticesPush(attr.vertices, position, dimension, orientation);
-
-    // Push text coordinates.
-    texCoordsPush(attr.texCoords);
-
-    // Push color
-    colorPush(attr.colors, color);
 
     // Push indices.
-    indicesPush(attr.indices);
+    indicesPush(ref);
 
-    // Push attribute onto the vector.
-    m_entityAttributes.push_back(attr);
+    // Push vertices.
+    verticesPush(ref, position, dimension, orientation);
+
+    // Push text coordinates.
+    texCoordsPush(ref);
+
+    // Push color
+    colorPush(ref, color);
 }
 
 
@@ -457,9 +454,8 @@ void Renderer::render(
     void
     )
 {
-    GLint           position, mvp, texCoords, color; 
-    float           ortho[16];
-    unsigned int    i;
+    GLint   position, mvp, texCoords, color; 
+    float   ortho[16];
 
 
     // Clear framebuffer.
@@ -479,52 +475,62 @@ void Renderer::render(
     ortho_matrix(0, (float) constants::WINDOW_WIDTH, (float) constants::WINDOW_HEIGHT, 0, ortho);
     glUniformMatrix4fv(mvp, 1, GL_FALSE, ortho);
 
-    for(i = 0; i < m_entityAttributes.size(); i++)
+    for(std::map<Texture *, Value>::iterator iter = m_steps.begin();
+        iter != m_steps.end();
+        iter++)
     {
-        // Bind texture.
-        glBindTexture(GL_TEXTURE_2D, m_entityAttributes[i].texture);
+        if(!(*iter).second.vertices.empty())
+        {
+            // Bind texture.
+            glBindTexture(GL_TEXTURE_2D, (*iter).first->m_textureID);
 
-        // Get attributes.
-        position = glGetAttribLocation(m_uiProgram, "mPosition");
-        assert(position != -1);
+            // Get attributes.
+            position = glGetAttribLocation(m_uiProgram, "mPosition");
+            assert(position != -1);
 
-        color = glGetAttribLocation(m_uiProgram, "mColor");
-        assert(color != -1);
+            color = glGetAttribLocation(m_uiProgram, "mColor");
+            assert(color != -1);
 
-        texCoords = glGetAttribLocation(m_uiProgram, "mTexCoords");
-        assert(texCoords != -1);
-        
-        // Enable attributes.
-        glEnableVertexAttribArray(position);
-        glEnableVertexAttribArray(color);
-        glEnableVertexAttribArray(texCoords);
+            texCoords = glGetAttribLocation(m_uiProgram, "mTexCoords");
+            assert(texCoords != -1);
 
-        // Set attributes.
-        glVertexAttribPointer(position,
-                              2,
-                              GL_FLOAT,
-                              GL_FALSE,
-                              0,
-                              &m_entityAttributes[i].vertices[0]);
+            // Enable attributes.
+            glEnableVertexAttribArray(position);
+            glEnableVertexAttribArray(color);
+            glEnableVertexAttribArray(texCoords);
 
-        glVertexAttribPointer(color,
-                              4,
-                              GL_FLOAT,
-                              GL_FALSE,
-                              0,
-                              &m_entityAttributes[i].colors[0]);
+            // Set attributes.
+            glVertexAttribPointer(position,
+                                  2,
+                                  GL_FLOAT,
+                                  GL_TRUE,
+                                  0,
+                                  &((*iter).second.vertices[0]));
 
-        glVertexAttribPointer(texCoords,
-                              2,
-                              GL_FLOAT,
-                              GL_FALSE,
-                              0,
-                              &m_entityAttributes[i].texCoords[0]);
+            glVertexAttribPointer(color,
+                                  4,
+                                  GL_FLOAT,
+                                  GL_TRUE,
+                                  0,
+                                  &((*iter).second.colors[0]));
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_entityAttributes[i].indices[0]);
+            glVertexAttribPointer(texCoords,
+                                  2,
+                                  GL_FLOAT,
+                                  GL_TRUE,
+                                  0,
+                                  &((*iter).second.texCoords[0]));
+
+            size_t indices_len = (*iter).second.indices.size();
+
+            glDrawElements(GL_TRIANGLES, indices_len, GL_UNSIGNED_SHORT, &((*iter).second.indices[0]));
+
+            (*iter).second.vertices.clear();
+            (*iter).second.indices.clear();
+            (*iter).second.texCoords.clear();
+            (*iter).second.colors.clear();
+        }
     }
-
-    m_entityAttributes.clear();
 
     if(!eglSwapBuffers(m_sEGLDisplay, m_sEGLSurface))
     {
