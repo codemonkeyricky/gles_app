@@ -11,69 +11,69 @@
  * process_window(): This function handles Windows callbacks.
  */
 LRESULT CALLBACK process_window(HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uiMsg) {
-		case WM_CLOSE:
-				PostQuitMessage(0);
-				return 0;
+    switch(uiMsg) {
+        case WM_CLOSE:
+                PostQuitMessage(0);
+                return 0;
 
-		case WM_ACTIVATE:
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_SIZE:
-				return 0;
-	}
+        case WM_ACTIVATE:
+        case WM_KEYDOWN:
+        case WM_KEYUP:
+        case WM_SIZE:
+                return 0;
+    }
 
-	return DefWindowProc(hWnd, uiMsg, wParam, lParam);
+    return DefWindowProc(hWnd, uiMsg, wParam, lParam);
 }
 
 
 /* 
  * create_window(): Set up Windows specific bits.
  *
- * uiWidth:	 Width of window to create.
- * uiHeight:	Height of window to create.
+ * uiWidth:     Width of window to create.
+ * uiHeight:    Height of window to create.
  *
- * Returns:	 Device specific window handle.
+ * Returns:     Device specific window handle.
  */
 HWND create_window(
     int uiWidth, 
     int uiHeight
     ) 
 {
-	WNDCLASS wc;
-	RECT wRect;
-	HWND sWindow;
-	HINSTANCE hInstance;
+    WNDCLASS wc;
+    RECT wRect;
+    HWND sWindow;
+    HINSTANCE hInstance;
 
-	wRect.left = 0L;
-	wRect.right = (long)uiWidth;
-	wRect.top = 0L;
-	wRect.bottom = (long)uiHeight;
+    wRect.left = 0L;
+    wRect.right = (long)uiWidth;
+    wRect.top = 0L;
+    wRect.bottom = (long)uiHeight;
 
-	hInstance = GetModuleHandle(NULL);
+    hInstance = GetModuleHandle(NULL);
 
-	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = (WNDPROC)process_window;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = NULL;
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = (LPCWSTR) "OGLES";
+    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc = (WNDPROC)process_window;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = hInstance;
+    wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = (LPCWSTR) "OGLES";
 
-	RegisterClass(&wc);
+    RegisterClass(&wc);
 
-	AdjustWindowRectEx(&wRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+    AdjustWindowRectEx(&wRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
 
-	sWindow = CreateWindowEx(WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, (LPCWSTR) "OGLES", (LPCWSTR) "main", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, uiWidth, uiHeight, NULL, NULL, hInstance, NULL);
+    sWindow = CreateWindowEx(WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, (LPCWSTR) "OGLES", (LPCWSTR) "main", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, uiWidth, uiHeight, NULL, NULL, hInstance, NULL);
 
-	ShowWindow(sWindow, SW_SHOW);
-	SetForegroundWindow(sWindow);
-	SetFocus(sWindow);
+    ShowWindow(sWindow, SW_SHOW);
+    SetForegroundWindow(sWindow);
+    SetFocus(sWindow);
 
-	return sWindow;
+    return sWindow;
 }
 
 
@@ -94,7 +94,7 @@ char * load_shader(
     if(pFile == NULL)
     {
         fprintf(stderr, "Error: Cannot read file '%s'\n", sFilename);
-  		exit(-1);
+          exit(-1);
     }
 
     fseek(pFile, 0, SEEK_END); /* Seek end of file */
@@ -121,60 +121,60 @@ void process_shader(
     GLint iShaderType
     )
 {
-	GLint iStatus;
-	const char *aStrings[1] = { NULL };
+    GLint iStatus;
+    const char *aStrings[1] = { NULL };
 
-	/* Create shader and load into GL. */
-	*pShader = glCreateShader(iShaderType);
-	
-	aStrings[0] = load_shader(sFilename);
-	
-	// Set shader source.
-	glShaderSource(*pShader, 1, aStrings, NULL);
+    /* Create shader and load into GL. */
+    *pShader = glCreateShader(iShaderType);
 
-	/* Clean up shader source. */
-	free((void *) aStrings[0]);
-	aStrings[0] = NULL;
+    aStrings[0] = load_shader(sFilename);
 
-	// Compile shader.
-	glCompileShader(*pShader);
+    // Set shader source.
+    glShaderSource(*pShader, 1, aStrings, NULL);
 
-	// Get shader status.
-	glGetShaderiv(*pShader,
-	              GL_COMPILE_STATUS,
-	              &iStatus);
+    /* Clean up shader source. */
+    free((void *) aStrings[0]);
+    aStrings[0] = NULL;
 
-	// Dump debug info (source and log) if compilation failed.
-	if(iStatus != GL_TRUE)
-	{
+    // Compile shader.
+    glCompileShader(*pShader);
+
+    // Get shader status.
+    glGetShaderiv(*pShader,
+                  GL_COMPILE_STATUS,
+                  &iStatus);
+
+    // Dump debug info (source and log) if compilation failed.
+    if(iStatus != GL_TRUE)
+    {
 #ifdef DEBUG
-		GLint iLen;
-		char *sDebugSource = NULL;
-		char *sErrorLog = NULL;
+        GLint iLen;
+        char *sDebugSource = NULL;
+        char *sErrorLog = NULL;
 
-		/* Get shader source. */
-		GL_CHECK(glGetShaderiv(*pShader, GL_SHADER_SOURCE_LENGTH, &iLen));
+        /* Get shader source. */
+        GL_CHECK(glGetShaderiv(*pShader, GL_SHADER_SOURCE_LENGTH, &iLen));
 
-		sDebugSource = malloc(iLen);
+        sDebugSource = malloc(iLen);
 
-		GL_CHECK(glGetShaderSource(*pShader, iLen, NULL, sDebugSource));
-		
-		printf("Debug source START:\n%s\nDebug source END\n\n", sDebugSource);
-		free(sDebugSource);
+        GL_CHECK(glGetShaderSource(*pShader, iLen, NULL, sDebugSource));
 
-		/* Now get the info log. */
-		GL_CHECK(glGetShaderiv(*pShader, GL_INFO_LOG_LENGTH, &iLen));
-		
-		sErrorLog = malloc(iLen);
-		
-		GL_CHECK(glGetShaderInfoLog(*pShader, iLen, NULL, sErrorLog));
-		
-		printf("Log START:\n%s\nLog END\n\n", sErrorLog);
-		free(sErrorLog);
+        printf("Debug source START:\n%s\nDebug source END\n\n", sDebugSource);
+        free(sDebugSource);
+
+        /* Now get the info log. */
+        GL_CHECK(glGetShaderiv(*pShader, GL_INFO_LOG_LENGTH, &iLen));
+
+        sErrorLog = malloc(iLen);
+
+        GL_CHECK(glGetShaderInfoLog(*pShader, iLen, NULL, sErrorLog));
+
+        printf("Log START:\n%s\nLog END\n\n", sErrorLog);
+        free(sErrorLog);
 #endif
 
-		exit(-1);
-	}
+        exit(-1);
+    }
 }
 
 
@@ -372,7 +372,7 @@ static void verticesPush(
 
 static void colorPush(
     std::vector<Color4f> &color_vec, 
-	Color4f              &color
+    Color4f              &color
     )
 {
     color_vec.push_back(color);
