@@ -9,12 +9,16 @@
 #include "Input.h"
 #include "EnemySpawner.h"
 #include "ParticleManager.h"
+#include "Timer.h"
 
 int main(
     int     argc,
     char  **argv
     )
 {
+    size_t start_time, end_time, delta, sleep_ms; 
+
+
     // Instantiate renderer. 
     Renderer::getInstance(); 
 
@@ -23,6 +27,8 @@ int main(
 
     while(1) 
     {
+        start_time = Timer::getTimeMS(); 
+
         // Update input.
         Input::getInstance()->update();
 
@@ -47,7 +53,17 @@ int main(
         // Kick the renderer.
         Renderer::getInstance()->render();
 
-        Sleep(20);
+        end_time = Timer::getTimeMS(); 
+
+        delta = end_time - start_time; 
+
+        // assert(delta < 17); 
+
+        if(17 > delta)
+        {
+            sleep_ms = 17 - delta; 
+            Sleep(sleep_ms); 
+        }
     }
 
     return 0;
