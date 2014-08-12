@@ -5,6 +5,10 @@
 #include "EntityManager.h"
 #include "Timer.h"
 #include "Math.h"
+#include "ColorUtil.h"
+#include "MathUtil.h"
+#include "Extensions.h"
+#include "ParticleManager.h"
 
 BlackHole::BlackHole(
     const Vector2f &position
@@ -63,6 +67,20 @@ void BlackHole::wasShot()
     if(m_hitPoints <= 0)
     {
         m_isExpired = true;
+    }
+
+    float hue = fmodf(3.0f / 1000.0f * Timer::getTimeMS(), 6);
+    Color4f color = ColorUtil::HSVToColor(hue, 0.25f, 1);
+    const int numParticles = 150;
+    float startOffset = Extensions::nextFloat(0, Math::PI * 2.0f / numParticles);
+
+    for(int i = 0; i < numParticles; i++)
+    {
+        Vector2f sprayVel = MathUtil::fromPolar(Math::PI * 2.0f * i / numParticles + startOffset, Extensions::nextFloat(8, 16));
+        Vector2f pos = m_position + 2.0f * sprayVel;
+        ParticleState state(sprayVel, ParticleState::kIgnoreGravity, 1.0f);
+
+        ParticleManager::getInstance()->createParticle(Art::getInstance()->getLineParticle(), pos, color, 90, 1.5f, state);
     }
 
 //    tSound* temp = Sound::getInstance()->getExplosion();
