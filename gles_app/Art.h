@@ -16,6 +16,7 @@ protected:
     Texture *m_fontTexture;
     Texture *m_lineParticle;
     Texture *m_glow;
+    Texture *m_pixel;
 
 protected:
     Art();
@@ -29,6 +30,7 @@ public:
     Texture *getBlackHole() const;
     Texture *getLineParticle() const;
     Texture *getGlow() const;
+    Texture *getPixel() const;
 
 //    tSpriteFont getFont() const;
 

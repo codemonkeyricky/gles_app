@@ -3,7 +3,8 @@
 #include "Vector.h"
 #include "Extensions.h"
 #include <math.h>
-
+#include "Renderer.h"
+#include "Art.h"
 
 float Extensions::toAngle(
     const Vector2f &vector
@@ -62,4 +63,23 @@ Color4f Extensions::colorLerp(
                    Math::mix(a.g, b.g, alpha),
                    Math::mix(a.b, b.b, alpha),
                    Math::mix(a.a, b.a, alpha));
+}
+
+
+void Extensions::drawLine(
+    Vector2f& start,
+    const Vector2f& end,
+    Color4f& color,
+    float thickness
+    )
+{
+    Vector2f delta = end - start;
+
+
+    Renderer::getInstance()->draw(
+        start,
+        Vector2f(delta.length(), thickness),
+        toAngle(delta),
+        Art::getInstance()->getPixel(),
+        color);
 }

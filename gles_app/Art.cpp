@@ -14,6 +14,8 @@ Art::Art()
     m_lineParticle  = new Texture(Surface("laser.png"));
     m_glow          = new Texture(Surface("glow.png"));
 
+    m_pixel         = new Texture(Surface("pixel.png"));
+
     // m_fontTexture = new Texture(Surface("font.png"));
 }
 
@@ -63,6 +65,12 @@ Texture * Art::getLineParticle() const
 Texture * Art::getGlow() const
 {
     return m_glow;
+}
+
+
+Texture * Art::getPixel() const
+{
+    return m_pixel;
 }
 
 //Texture * Art::getFont() const
