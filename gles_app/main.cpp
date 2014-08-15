@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 
 #include "Renderer.h"
@@ -10,6 +9,8 @@
 #include "EnemySpawner.h"
 #include "ParticleManager.h"
 #include "Timer.h"
+#include "Grid.h"
+
 
 int main(
     int     argc,
@@ -44,11 +45,15 @@ int main(
         // Update particle instance.
         ParticleManager::getInstance()->update();
 
+        Grid::getInstance()->update();
+
         // Draw all entities held by entity manager.
         EntityManager::getInstance()->draw(); 
 
         // Draw all particles.
         ParticleManager::getInstance()->draw();
+
+        Grid::getInstance()->draw();
 
         // Kick the renderer.
         Renderer::getInstance()->render();

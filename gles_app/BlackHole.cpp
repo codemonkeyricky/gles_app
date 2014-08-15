@@ -9,10 +9,11 @@
 #include "MathUtil.h"
 #include "Extensions.h"
 #include "ParticleManager.h"
+#include "Grid.h"
 
 BlackHole::BlackHole(
     const Vector2f &position
-    )
+    ) : m_sprayAngle(0)
 {
     m_image     = Art::getInstance()->getBlackHole();
     m_position  = position;
@@ -50,6 +51,10 @@ void BlackHole::update()
             (*iter)->setVelocity((*iter)->getVelocity() + pos.normalize() * Math::mix(2.0f, 0.0f, length / 250.0f));
         }
     }
+
+    m_sprayAngle -= Math::PI * 2.0f / 50.0f;
+
+    Grid::getInstance()->applyImplosiveForce((float)sinf(m_sprayAngle / 2.0f) * 10 + 20, m_position, 200);
 }
 
 void BlackHole::draw()

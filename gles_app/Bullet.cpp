@@ -2,6 +2,7 @@
 #include "Bullet.h"
 #include "Rect.h"
 #include "Art.h"
+#include "Grid.h"
 
 
 Bullet::Bullet(
@@ -31,6 +32,8 @@ void Bullet::update(
     }
 
     m_position += m_velocity;
+
+    Grid::getInstance()->applyExplosiveForce(0.5f *m_velocity.length(), m_position, 80);
 
     // Check if the bullet is still in boundary.
     boundary = Rectf(0, 0, (float) constants::WINDOW_WIDTH, (float) constants::WINDOW_HEIGHT);

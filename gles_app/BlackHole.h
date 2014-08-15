@@ -7,6 +7,7 @@ class BlackHole
 {
 protected:
     int m_hitPoints;
+    float   m_sprayAngle;
 
 public:
     BlackHole(const Vector2f &position);
