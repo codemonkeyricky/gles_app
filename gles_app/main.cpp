@@ -45,6 +45,7 @@ int main(
         // Update particle instance.
         ParticleManager::getInstance()->update();
 
+        // Update grid. 
         Grid::getInstance()->update();
 
         // Draw all entities held by entity manager.
@@ -53,6 +54,7 @@ int main(
         // Draw all particles.
         ParticleManager::getInstance()->draw();
 
+        // Draw grid.
         Grid::getInstance()->draw();
 
         // Kick the renderer.
