@@ -1,11 +1,31 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+#include <deque>
 
 #include "constants.hpp"
 #include "Renderer.h"
 #include "Matrix.h"
 
+
+
+typedef struct {
+    GLuint program;
+
+    GLint a_normal;
+    GLint a_position;
+    GLint u_mvp;
+    GLint u_color;
+    GLint u_light;
+
+} TextureProgram;
+
+// static Table table;
+// static Wall wall;
+static TextureProgram texture_program;
+// static std::deque<GLuint>   wall_vbos;
+static std::deque<GLuint>   terrian_vbos;
 
 /*
  * process_window(): This function handles Windows callbacks.
@@ -208,6 +228,333 @@ static void ortho_matrix(
 }
 
 
+
+
+
+#define TERRAIN_WIDTH   100
+#define TERRAIN_HEIGHT  100
+#define OCTAVE_COUNT    6
+#define PERSISTANCE     0.5f
+#define UNIT_LEN        2
+
+float interpolate(
+    float x0,
+    float x1,
+    float alpha
+    )
+{
+    return x0 * (1 - alpha) + alpha * x1;
+}
+
+
+
+static void printMap(
+    float   map[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    )
+{
+    for(auto i = 0; i < TERRAIN_WIDTH; ++i)
+    {
+        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        {
+//            LOGE("### map[%u][%u] = %f", i, j, map[i][j]);
+        }
+    }
+}
+
+
+static void whiteNoiseGenerate(
+    float heightMap[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    )
+{
+    for(auto i = 0; i < TERRAIN_WIDTH; ++i)
+    {
+        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        {
+            heightMap[i][j] = (double)rand() / (double)RAND_MAX ;
+        }
+    }
+
+//    LOGE("### white noise map");
+//    printMap(heightMap);
+}
+
+
+static void smoothNoiseGenerate(
+    float   whiteNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT],
+    int     octave,
+    float   smoothNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    )
+{
+    int samplePeriod = 1 << octave;
+    float sampleFrequency = 1.0f / samplePeriod;
+
+    for(int i = 0; i < TERRAIN_WIDTH; ++i)
+    {
+        int sample_i0 = (i / samplePeriod) * samplePeriod;
+        int sample_i1 = (sample_i0 + samplePeriod) % TERRAIN_WIDTH;
+        float horizontal_blend = (i - sample_i0) * sampleFrequency;
+
+        for(int j = 0; j < TERRAIN_HEIGHT; ++j)
+        {
+            int sample_j0 = (j / samplePeriod) * samplePeriod;
+            int sample_j1 = (sample_j0 + samplePeriod) % TERRAIN_HEIGHT;
+            float vertical_blend = (j - sample_j0) * sampleFrequency;
+
+            float top = interpolate(
+                whiteNoise[sample_i0][sample_j0],
+                whiteNoise[sample_i1][sample_j0],
+                horizontal_blend);
+
+            float bottom = interpolate(
+                whiteNoise[sample_i0][sample_j1],
+                whiteNoise[sample_i1][sample_j1],
+                horizontal_blend);
+
+            smoothNoise[i][j] = interpolate(
+                top,
+                bottom,
+                vertical_blend);
+        }
+    }
+}
+
+
+static void perlinNoiseGenerate(
+    float   perlinNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    )
+{
+    float persistance = PERSISTANCE;
+    float smoothNoiseMap[OCTAVE_COUNT][TERRAIN_WIDTH][TERRAIN_HEIGHT];
+    float baseNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT];
+
+    // Generate base noise.
+    whiteNoiseGenerate(baseNoise);
+
+    // Generate smooth noise based on base noise.
+    for(auto i = 0; i < OCTAVE_COUNT; ++i)
+    {
+        smoothNoiseGenerate(baseNoise, i, smoothNoiseMap[i]);
+
+        if(i == 5)
+        {
+//            LOGE("### smooth Noise map. octave = %u", i);
+            printMap(smoothNoiseMap[i]);
+        }
+    }
+
+    memset(perlinNoise, 0, sizeof(float)*TERRAIN_WIDTH*TERRAIN_HEIGHT);
+
+    float amplitude         = 1.0f;
+    float totalAmplitude    = 0.0f;
+
+    for(auto octave = OCTAVE_COUNT - 1; octave >= 0; --octave)
+    {
+        amplitude       *= persistance;
+        totalAmplitude  += amplitude;
+
+        for(auto i = 0; i < TERRAIN_WIDTH; ++i)
+        {
+            for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+            {
+                perlinNoise[i][j] += smoothNoiseMap[octave][i][j] * amplitude;
+            }
+        }
+    }
+
+//    LOGE("### perlin noise before normalize");
+//    printMap(perlinNoise);
+
+    for(auto i = 0; i < TERRAIN_WIDTH; ++i)
+    {
+        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        {
+            perlinNoise[i][j] /= totalAmplitude;
+        }
+    }
+
+//    LOGE("### perlin noise after normalize");
+//    printMap(perlinNoise);
+
+//    while(1);
+
+//    while(1)
+//    {
+//        usleep(100000);
+//    }
+//    exit(0);
+}
+
+
+typedef struct
+{
+    std::vector<float>  vertex;
+    std::vector<float>  normal;
+
+} sTERRIAN_STRUCT;
+
+std::deque<sTERRIAN_STRUCT> f_terrian;
+
+GLuint vboCreate(
+    const GLsizeiptr    size,
+    const GLvoid       *data,
+    const GLenum        usage
+    )
+{
+    assert(data != NULL);
+
+
+    GLuint vbo_object;
+    glGenBuffers(1, &vbo_object);
+    assert(vbo_object != 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_object);
+    glBufferData(GL_ARRAY_BUFFER, size, data, usage);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return vbo_object;
+}
+
+
+static void terrain_init(void)
+{
+    float height_map[TERRAIN_WIDTH][TERRAIN_HEIGHT] = {0};
+
+    perlinNoiseGenerate(height_map);
+
+    for(auto i = 0; i < TERRAIN_WIDTH; ++i)
+    {
+        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        {
+            height_map[i][j] *= 20;
+        }
+    }
+
+//    LOGE("### perlin noise generate");
+//    printMap(height_map);
+
+    sTERRIAN_STRUCT terrain;
+//    std::vector<float>  vertex;
+//    std::vector<float>  normal;
+
+    for(auto i = 0; i < TERRAIN_WIDTH - 1; ++i)
+    {
+        for(auto j = 0; j < TERRAIN_HEIGHT - 1; ++j)
+        {
+            Vector3f v0((float)(i * UNIT_LEN),
+                       height_map[i][j],
+                       (float)(j * UNIT_LEN));
+
+            Vector3f v1((float)((i+1) * UNIT_LEN),
+                       height_map[i+1][j],
+                       (float)(j * UNIT_LEN));
+
+            Vector3f v2((float)((i+1) * UNIT_LEN),
+                       height_map[i+1][j+1],
+                       (float)((j+1) * UNIT_LEN));
+
+            Vector3f v3((float)(i * UNIT_LEN),
+                       height_map[i][j+1],
+                       (float)((j+1) * UNIT_LEN));
+
+            auto x = v2 - v0;
+            auto y = v1 - v0;
+
+            auto crossProduct = x.cross(y);
+            auto normal = crossProduct.normalize();
+
+            // 0 2 1    0, 3, 2
+            terrain.vertex.push_back(v0[0]);
+            terrain.vertex.push_back(v0[1]);
+            terrain.vertex.push_back(v0[2]);
+
+            terrain.vertex.push_back(normal.x);
+            terrain.vertex.push_back(normal.y);
+            terrain.vertex.push_back(normal.z);
+
+            terrain.vertex.push_back(v2[0]);
+            terrain.vertex.push_back(v2[1]);
+            terrain.vertex.push_back(v2[2]);
+
+            terrain.vertex.push_back(normal.x);
+            terrain.vertex.push_back(normal.y);
+            terrain.vertex.push_back(normal.z);
+
+            terrain.vertex.push_back(v1[0]);
+            terrain.vertex.push_back(v1[1]);
+            terrain.vertex.push_back(v1[2]);
+
+            terrain.vertex.push_back(normal.x);
+            terrain.vertex.push_back(normal.y);
+            terrain.vertex.push_back(normal.z);
+
+//            for(auto k = 0; k < 3; k++)
+//            {
+//                terrain.vertex.push_back(normal.x);
+//                terrain.vertex.push_back(normal.y);
+//                terrain.vertex.push_back(normal.z);
+//            }
+
+//            LOGE("### normal %f, %f, %f", normal.x, normal.y, normal.z);
+
+            x = v2 - v0;
+            y = v1 - v0;
+
+            crossProduct = x.cross(y);
+            normal = crossProduct.normalize();
+
+            terrain.vertex.push_back(v0[0]);
+            terrain.vertex.push_back(v0[1]);
+            terrain.vertex.push_back(v0[2]);
+
+            terrain.vertex.push_back(normal.x);
+            terrain.vertex.push_back(normal.y);
+            terrain.vertex.push_back(normal.z);
+
+            terrain.vertex.push_back(v3[0]);
+            terrain.vertex.push_back(v3[1]);
+            terrain.vertex.push_back(v3[2]);
+
+            terrain.vertex.push_back(normal.x);
+            terrain.vertex.push_back(normal.y);
+            terrain.vertex.push_back(normal.z);
+
+            terrain.vertex.push_back(v2[0]);
+            terrain.vertex.push_back(v2[1]);
+            terrain.vertex.push_back(v2[2]);
+
+            terrain.vertex.push_back(normal.x);
+            terrain.vertex.push_back(normal.y);
+            terrain.vertex.push_back(normal.z);
+
+//            auto x = v2 - v0;
+//            auto y = v1 - v0;
+//
+//            auto cross = {x[1]*y[2] - y[1]*x[2],
+//                          x[2]*y[0] - y[2]*x[0],
+//                          x[0]*y[1] - y[0]*x[1]};
+//
+//            auto normal = normalize(cross);
+
+
+
+//            for(auto k = 0; k < 3; k++)
+//            {
+//                terrain.vertex.push_back(normal.x);
+//                terrain.vertex.push_back(normal.y);
+//                terrain.vertex.push_back(normal.z);
+//            }
+        }
+    }
+
+//    LOGE("#### terrian vertex count = %u", terrain.vertex.size());
+
+    f_terrian.push_back(terrain);
+
+    GLuint buffer = vboCreate(f_terrian[0].vertex.size()*4, &f_terrian[0].vertex[0], GL_STATIC_DRAW);
+    terrian_vbos.push_back(buffer);
+}
+
+
 Renderer::Renderer(
     void
     )
@@ -217,7 +564,6 @@ Renderer::Renderer(
         EGL_RED_SIZE, 8,
         EGL_GREEN_SIZE, 8,
         EGL_BLUE_SIZE, 8,
-        EGL_DEPTH_SIZE, 16,
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         EGL_NONE
     };
@@ -262,17 +608,33 @@ Renderer::Renderer(
     eglMakeCurrent(m_sEGLDisplay, m_sEGLSurface, m_sEGLSurface, m_sEGLContext);
 
     // Shader Initialisation
-    process_shader(&m_uiVertShader, "C:\\cygwin\\home\\ricky\\dev\\gles_app\\gles_app\\shader.vert", GL_VERTEX_SHADER);
-    process_shader(&m_uiFragShader, "C:\\cygwin\\home\\ricky\\dev\\gles_app\\gles_app\\shader.frag", GL_FRAGMENT_SHADER);
+    process_shader(&m_uiVertShader, "C:\\cygwin\\home\\ricky\\dev\\gles_app\\gles_app\\color_shader.vsh", GL_VERTEX_SHADER);
+    process_shader(&m_uiFragShader, "C:\\cygwin\\home\\ricky\\dev\\gles_app\\gles_app\\color_shader.fsh", GL_FRAGMENT_SHADER);
 
     // Create uiProgram (ready to attach shaders)
-    m_uiProgram = glCreateProgram();
+    texture_program.program = glCreateProgram();
 
     // Attach shaders and link uiProgram
-    glAttachShader(m_uiProgram, m_uiVertShader);
-    glAttachShader(m_uiProgram, m_uiFragShader);
-    glLinkProgram(m_uiProgram);
+    glAttachShader(texture_program.program, m_uiVertShader);
+    glAttachShader(texture_program.program, m_uiFragShader);
+    glLinkProgram(texture_program.program);
 
+    texture_program.a_position = glGetAttribLocation(texture_program.program, "a_Position");
+    assert(texture_program.a_position != -1);
+
+    texture_program.a_normal = glGetAttribLocation(texture_program.program, "a_Normal");
+    assert(texture_program.a_normal != -1);
+
+    texture_program.u_mvp = glGetUniformLocation(texture_program.program, "u_MvpMatrix");
+    assert(texture_program.u_mvp != -1);
+
+    texture_program.u_color = glGetUniformLocation(texture_program.program, "u_Color");
+    assert(texture_program.u_color != -1);
+
+    texture_program.u_light = glGetUniformLocation(texture_program.program, "u_VectorToLight");
+    assert(texture_program.u_light != -1);
+
+#if 0
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
@@ -281,6 +643,9 @@ Renderer::Renderer(
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
+#endif
+
+    terrain_init();
 }
 
 
@@ -449,88 +814,281 @@ void Renderer::draw(
     colorPush(ref, color);
 }
 
+typedef float vec3[3];
+typedef float vec4[4];
+typedef vec4 mat4x4[4];
+
+
+static float vec3_mul_inner(
+    vec3 a, vec3 b
+    )
+{
+    float p = 0;
+    unsigned int i;
+
+    for(i = 0; i < 3; ++i)
+    {
+        p += b[i] * a[i];
+    }
+
+    return p;
+}
+
+
+static inline float vec3_len(
+    vec3 v
+    )
+{
+    return sqrtf(vec3_mul_inner(v, v));
+}
+
+
+static inline void mat4x4_translate_in_place(
+    mat4x4 m,
+    float x,
+    float y,
+    float z
+    )
+{
+    unsigned int i;
+
+
+    for(i = 0; i < 4; ++i)
+    {
+        m[3][i] += m[0][i] * x
+                +  m[1][i] * y
+                +  m[2][i] * z;
+    }
+}
+
+
+static inline void mat4x4_mul(
+    mat4x4 M,
+    mat4x4 a,
+    mat4x4 b
+    )
+{
+    unsigned int r, c, k;
+    mat4x4 R;
+
+    for(r = 0; r < 4; r++)
+    {
+        for(c = 0; c < 4; c++)
+        {
+            R[c][r] = 0;
+            for(k = 0; k < 4; k++)
+            {
+                R[c][r] += a[k][r] * b[c][k];
+            }
+        }
+    }
+
+    memcpy(M, R, sizeof(R));
+}
+
+
+static void mat4x4_perspective(
+    mat4x4  m,
+    float   y_fov_in_degrees,
+    float   aspect,
+    float   n,
+    float   f
+    )
+{
+#define M_PI 3.14159f
+    const float angle_in_radians = (float)(y_fov_in_degrees * M_PI / 180.0f);
+    const float a = (float)(1.0f / tan(angle_in_radians / 2.0f));
+
+    m[0][0] = a / aspect;
+    m[0][1] = 0.0f;
+    m[0][2] = 0.0f;
+    m[0][3] = 0.0f;
+
+    m[1][0] = 0.0f;
+    m[1][1] = a;
+    m[1][2] = 0.0f;
+    m[1][3] = 0.0f;
+
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = -((f + n) / (f - n));
+    m[2][3] = -1.0f;
+
+    m[3][0] = 0.0f;
+    m[3][1] = 0.0f;
+    m[3][2] = -((2.0f * f * n) / (f - n));
+    m[3][3] = 0.0f;
+}
+
+
+static void mat4x4_look_at(
+    mat4x4  m,
+    float   eyeX,
+    float   eyeY,
+    float   eyeZ,
+    float   centerX,
+    float   centerY,
+    float   centerZ,
+    float   upX,
+    float   upY,
+    float   upZ
+    )
+{
+    float fx = centerX - eyeX;
+    float fy = centerY - eyeY;
+    float fz = centerZ - eyeZ;
+
+    // Normalize f.
+    vec3 f_vec = {fx, fy, fz};
+    float rlf = 1.0f / vec3_len(f_vec);
+    fx *= rlf;
+    fy *= rlf;
+    fz *= rlf;
+
+    // compute s = f x up (cross product)
+    float sx = fy * upZ - fz * upY;
+    float sy = fz * upX - fx * upZ;
+    float sz = fx * upY - fy * upX;
+
+    // Normalize s.
+    vec3 s_vec = {sx, sy, sz};
+    float rls = 1.0f / vec3_len(s_vec);
+    sx *= rls;
+    sy *= rls;
+    sz *= rls;
+
+    // Compute u = s x f
+    float ux = sy * fz - sz * fy;
+    float uy = sz * fx - sx * fz;
+    float uz = sx * fy - sy * fx;
+
+    m[0][0] = sx;
+    m[0][1] = ux;
+    m[0][2] = -fx;
+    m[0][3] = 0.0f;
+
+    m[1][0] = sy;
+    m[1][1] = uy;
+    m[1][2] = -fy;
+    m[1][3] = 0.0f;
+
+    m[2][0] = sz;
+    m[2][1] = uz;
+    m[2][2] = -fz;
+    m[2][3] = 0.0f;
+
+    m[3][0] = 0.0f;
+    m[3][1] = 0.0f;
+    m[3][2] = 0.0f;
+    m[3][3] = 1.0f;
+
+    mat4x4_translate_in_place(m, -eyeX, -eyeY, -eyeZ);
+}
+
+
+
+void terrain_draw(
+    const GLuint            buffer,
+    const TextureProgram   *texture_program,
+    mat4x4                  m
+    )
+{
+    const vec4 colors[] =
+    {
+        {1.0f, 0.0f, 0.0f, 1.0f},
+        {0.0f, 1.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 0.0f, 1.0f},
+        {0.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 0.0f, 1.0f, 1.0f}
+    };
+    static unsigned int colorIndex = 0;
+
+//    if(buffer == 2)
+//    {
+//        colorIndex = 0;
+//    }
+
+    glUseProgram(texture_program->program);
+    glUniformMatrix4fv(texture_program->u_mvp, 1, GL_FALSE, (GLfloat *) m);
+    glUniform4f(texture_program->u_color, colors[colorIndex][0], colors[colorIndex][1], colors[colorIndex][2], 1);
+    glUniform3f(texture_program->u_light, 0, 1, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glVertexAttribPointer(texture_program->a_position,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(GL_FLOAT)*6,   // For every vertex (float * 3), there's a normal.
+                                                // therefore the stride is float * 3 * 2
+                          (void *) 0);
+    glVertexAttribPointer(texture_program->a_normal,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(GL_FLOAT)*6,
+                          (void *) (sizeof(GL_FLOAT)*3));
+    glEnableVertexAttribArray(texture_program->a_position);
+    glEnableVertexAttribArray(texture_program->a_normal);
+
+    glDrawArrays(GL_TRIANGLES, 0, f_terrian[0].vertex.size());
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+//    colorIndex = (colorIndex+1) % 6;
+}
+
 
 void Renderer::render(
     void
     )
 {
     GLint   position, mvp, texCoords, color; 
-    float   ortho[16];
+    mat4x4  projection_matrix;
+    mat4x4  view_matrix;
+    mat4x4  view_projection_matrix;
 
+
+    // Render to frame buffer object.
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Clear framebuffer.
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    // Use program.
-    glUseProgram(m_uiProgram);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set active texture unit.
     glActiveTexture(GL_TEXTURE0);
 
-    // Get uniform location.
-    mvp = glGetUniformLocation(m_uiProgram, "mvp");
-    assert(mvp != -1);
+    glViewport(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
 
-    // TODO: can this be be initialized only once?
-    ortho_matrix(0, (float) constants::WINDOW_WIDTH, (float) constants::WINDOW_HEIGHT, 0, ortho);
-    glUniformMatrix4fv(mvp, 1, GL_FALSE, ortho);
+    mat4x4_perspective(projection_matrix,
+                       45,
+                       constants::WINDOW_WIDTH / constants::WINDOW_HEIGHT,
+                       1.0f,
+                       1000.0f);
 
-    for(std::map<Texture *, Value>::iterator iter = m_steps.begin();
-        iter != m_steps.end();
-        iter++)
-    {
-        if(!(*iter).second.vertices.empty())
-        {
-            // Bind texture.
-            glBindTexture(GL_TEXTURE_2D, (*iter).first->m_textureID);
+//    Vector2f pos = Player::getInstance()->getPosition();
 
-            // Get attributes.
-            position = glGetAttribLocation(m_uiProgram, "mPosition");
-            assert(position != -1);
+    mat4x4_look_at(view_matrix,
+                   20.0f,
+                   30.0f,
+                   20.0f,
+                   0.0f,
+                   0.0f,
+                   0.0f,
+                   0.0f,
+                   1.0f,
+                   0.0f);
 
-            color = glGetAttribLocation(m_uiProgram, "mColor");
-            assert(color != -1);
+    mat4x4_mul(view_projection_matrix, projection_matrix, view_matrix);
 
-            texCoords = glGetAttribLocation(m_uiProgram, "mTexCoords");
-            assert(texCoords != -1);
+//    draw_table(&table, &texture_program, view_projection_matrix);
 
-            // Enable attributes.
-            glEnableVertexAttribArray(position);
-            glEnableVertexAttribArray(color);
-            glEnableVertexAttribArray(texCoords);
+//    for(auto i = 0; i < wallsToPaint; ++i)
+//    {
+//        wall_draw(wall_vbos[i], &texture_program, view_projection_matrix);
+//    }
 
-            // Set attributes.
-            glVertexAttribPointer(position,
-                                  2,
-                                  GL_FLOAT,
-                                  GL_TRUE,
-                                  0,
-                                  &((*iter).second.vertices[0]));
-
-            glVertexAttribPointer(color,
-                                  4,
-                                  GL_FLOAT,
-                                  GL_TRUE,
-                                  0,
-                                  &((*iter).second.colors[0]));
-
-            glVertexAttribPointer(texCoords,
-                                  2,
-                                  GL_FLOAT,
-                                  GL_TRUE,
-                                  0,
-                                  &((*iter).second.texCoords[0]));
-
-            size_t indices_len = (*iter).second.indices.size();
-
-            glDrawElements(GL_TRIANGLES, indices_len, GL_UNSIGNED_SHORT, &((*iter).second.indices[0]));
-
-            (*iter).second.vertices.clear();
-            (*iter).second.indices.clear();
-            (*iter).second.texCoords.clear();
-            (*iter).second.colors.clear();
-        }
-    }
+    terrain_draw(terrian_vbos[0], &texture_program, view_projection_matrix);
 
     if(!eglSwapBuffers(m_sEGLDisplay, m_sEGLSurface))
     {

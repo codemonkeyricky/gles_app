@@ -30,6 +30,7 @@ int main(
     {
         start_time = Timer::getTimeMS(); 
 
+#if 0
         // Update input.
         Input::getInstance()->update();
 
@@ -56,6 +57,7 @@ int main(
 
         // Draw grid.
         Grid::getInstance()->draw();
+#endif
 
         // Kick the renderer.
         Renderer::getInstance()->render();
