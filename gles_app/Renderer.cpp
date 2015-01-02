@@ -465,7 +465,13 @@ static void surface_add(
     auto crossProduct = x.cross(y);
     auto normal = crossProduct.normalize();
 
-    // 0 2 1    0, 3, 2
+    // 0 2 1    0 3 2
+
+//#define TRIANGLE_1
+#define TRIANGLE_2
+
+    // 0 2 1 
+#if defined(TRIANGLE_1)
     terrain.push_back(v0[0]);
     terrain.push_back(v0[1]);
     terrain.push_back(v0[2]);
@@ -489,22 +495,16 @@ static void surface_add(
     terrain.push_back(normal.x);
     terrain.push_back(normal.y);
     terrain.push_back(normal.z);
+#endif
 
-    //            for(auto k = 0; k < 3; k++)
-        //            {
-        //                terrain.vertex.push_back(normal.x);
-    //                terrain.vertex.push_back(normal.y);
-    //                terrain.vertex.push_back(normal.z);
-    //            }
-
-    //            LOGE("### normal %f, %f, %f", normal.x, normal.y, normal.z);
-
+    // 0 3 2
     x = v2 - v0;
     y = v1 - v0;
 
     crossProduct = x.cross(y);
     normal = crossProduct.normalize();
 
+#if defined(TRIANGLE_2)
     terrain.push_back(v0[0]);
     terrain.push_back(v0[1]);
     terrain.push_back(v0[2]);
@@ -528,29 +528,17 @@ static void surface_add(
     terrain.push_back(normal.x);
     terrain.push_back(normal.y);
     terrain.push_back(normal.z);
-
-    //            auto x = v2 - v0;
-    //            auto y = v1 - v0;
-    //
-    //            auto cross = {x[1]*y[2] - y[1]*x[2],
-        //                          x[2]*y[0] - y[2]*x[0],
-    //                          x[0]*y[1] - y[0]*x[1]};
-    //
-    //            auto normal = normalize(cross);
-
-
-
-    //            for(auto k = 0; k < 3; k++)
-    //            {
-    //                terrain.vertex.push_back(normal.x);
-    //                terrain.vertex.push_back(normal.y);
-    //                terrain.vertex.push_back(normal.z);
-    //            }
+#endif
 }
 
 
+#if 1
 static Vector3f eye(20.0f, 20.0f, 20.0f);
 static Vector3f light(1.0f, 1.0f, 1.0f);
+#else
+static Vector3f eye(-20.0f, 20.0f, -20.0f);
+static Vector3f light(-1.0f, 1.0f, -1.0f);
+#endif
 
 static void cube_add(
     Vector3f           &pos,
@@ -586,7 +574,15 @@ static void cube_add(
     v1 = Vector3f(pos.x,    pos.y + 1,  pos.z + 1);
     v2 = Vector3f(pos.x,    pos.y,      pos.z + 1);
     v3 = Vector3f(pos.x,    pos.y,      pos.z);
+    // surface_add(v0, v1, v2, v3, terrain);
+
+    // back
+    v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
+    v1 = Vector3f(pos.x,        pos.y + 1,  pos.z);
+    v2 = Vector3f(pos.x,        pos.y,      pos.z);
+    v3 = Vector3f(pos.x + 1,    pos.y,      pos.z);
 //    surface_add(v0, v1, v2, v3, terrain);
+
 
 }
 
@@ -857,6 +853,8 @@ Renderer::Renderer(
 
     texture_program.u_light = glGetUniformLocation(texture_program.program, "u_VectorToLight");
     assert(texture_program.u_light != -1);
+
+    glEnable(GL_CULL_FACE);
 
 #if 0
     glEnable(GL_BLEND);
@@ -1296,7 +1294,7 @@ void Renderer::render(
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set active texture unit.
-    glActiveTexture(GL_TEXTURE0);
+//    glActiveTexture(GL_TEXTURE0);
 
     glViewport(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
 
