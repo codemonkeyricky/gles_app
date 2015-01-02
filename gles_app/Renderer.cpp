@@ -7,7 +7,7 @@
 #include "constants.hpp"
 #include "Renderer.h"
 #include "Matrix.h"
-
+#include "open-simplex-noise.h"
 
 
 typedef struct {
@@ -233,6 +233,7 @@ static void ortho_matrix(
 
 #define TERRAIN_WIDTH   100
 #define TERRAIN_HEIGHT  100
+#define TERRAIN_DEPTH   1
 #define OCTAVE_COUNT    6
 #define PERSISTANCE     0.5f
 #define UNIT_LEN        2
@@ -412,6 +413,44 @@ GLuint vboCreate(
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     return vbo_object;
+}
+
+
+
+static void simplex_test(void)
+{
+    float density_cube[TERRAIN_WIDTH][TERRAIN_HEIGHT][TERRAIN_DEPTH] = {0};
+    float processed_cube[TERRAIN_WIDTH][TERRAIN_HEIGHT][TERRAIN_DEPTH] = {0};
+    struct osn_context *ctx;
+
+
+    // Initialize noise.
+    open_simplex_noise(77374, &ctx);
+
+    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+    {
+        for(auto y = 0; y < TERRAIN_HEIGHT; y++)
+        {
+            for(auto z = 0; z < TERRAIN_HEIGHT; z++)
+            {
+                density_cube[x][y][z] = open_simplex_noise3(ctx, x, y, z);
+            }
+        }
+    }
+
+    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+    {
+        for(auto y = 0; y < TERRAIN_HEIGHT; y++)
+        {
+            for(auto z = 0; z < TERRAIN_HEIGHT; z++)
+            {
+                if(density_cube[x][y][z] > 0)
+                {
+                    processed_cube[x][y][z] = (density_cube[x][y][z] > 0) ? 1 : 0;
+                }
+            }
+        }
+    }
 }
 
 
@@ -646,6 +685,8 @@ Renderer::Renderer(
 #endif
 
     terrain_init();
+
+    simplex_test();
 }
 
 
