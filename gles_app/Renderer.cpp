@@ -549,6 +549,9 @@ static void surface_add(
 }
 
 
+static Vector3f eye(20.0f, 20.0f, 20.0f);
+static Vector3f light(1.0f, 1.0f, 1.0f);
+
 static void cube_add(
     Vector3f           &pos,
     std::vector<float> &terrain
@@ -578,13 +581,12 @@ static void cube_add(
     v3 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
     surface_add(v0, v1, v2, v3, terrain);
 
-//    // left
-//    v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
-//    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
-//    v2 = Vector3f(pos.x + 1,    pos.y,      pos.z);
-//    v3 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
+    // left
+    v0 = Vector3f(pos.x,    pos.y + 1,  pos.z);
+    v1 = Vector3f(pos.x,    pos.y + 1,  pos.z + 1);
+    v2 = Vector3f(pos.x,    pos.y,      pos.z + 1);
+    v3 = Vector3f(pos.x,    pos.y,      pos.z);
 //    surface_add(v0, v1, v2, v3, terrain);
-
 
 }
 
@@ -1250,7 +1252,7 @@ void terrain_draw(
     glUseProgram(texture_program->program);
     glUniformMatrix4fv(texture_program->u_mvp, 1, GL_FALSE, (GLfloat *) m);
     glUniform4f(texture_program->u_color, colors[colorIndex][0], colors[colorIndex][1], colors[colorIndex][2], 1);
-    glUniform3f(texture_program->u_light, 1, 1, 1);
+    glUniform3f(texture_program->u_light, light.x, light.y, light.z);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexAttribPointer(texture_program->a_position,
@@ -1307,9 +1309,9 @@ void Renderer::render(
 //    Vector2f pos = Player::getInstance()->getPosition();
 
     mat4x4_look_at(view_matrix,
-                   20.0f,
-                   20.0f,
-                   20.0f,
+                   eye.x,
+                   eye.y,
+                   eye.z,
                    0.0f,
                    0.0f,
                    0.0f,
