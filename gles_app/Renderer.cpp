@@ -467,7 +467,7 @@ static void surface_add(
 
     // 0 2 1    0 3 2
 
-//#define TRIANGLE_1
+#define TRIANGLE_1
 #define TRIANGLE_2
 
     // 0 2 1 
@@ -536,8 +536,8 @@ static void surface_add(
 static Vector3f eye(20.0f, 20.0f, 20.0f);
 static Vector3f light(1.0f, 1.0f, 1.0f);
 #else
-static Vector3f eye(-20.0f, 20.0f, -20.0f);
-static Vector3f light(-1.0f, 1.0f, -1.0f);
+static Vector3f eye(-20.0f, -20.0f, -20.0f);
+static Vector3f light(-1.0f, -1.0f, -1.0f);
 #endif
 
 static void cube_add(
@@ -574,7 +574,7 @@ static void cube_add(
     v1 = Vector3f(pos.x,    pos.y + 1,  pos.z + 1);
     v2 = Vector3f(pos.x,    pos.y,      pos.z + 1);
     v3 = Vector3f(pos.x,    pos.y,      pos.z);
-    // surface_add(v0, v1, v2, v3, terrain);
+//    surface_add(v0, v1, v2, v3, terrain);
 
     // back
     v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
@@ -583,7 +583,12 @@ static void cube_add(
     v3 = Vector3f(pos.x + 1,    pos.y,      pos.z);
 //    surface_add(v0, v1, v2, v3, terrain);
 
-
+    // bottom
+    v0 = Vector3f(pos.x,        pos.y,  pos.z + 1);
+    v1 = Vector3f(pos.x + 1,    pos.y,  pos.z + 1);
+    v2 = Vector3f(pos.x + 1,    pos.y,  pos.z);
+    v3 = Vector3f(pos.x,        pos.y,  pos.z);
+//    surface_add(v0, v1, v2, v3, terrain);
 }
 
 
