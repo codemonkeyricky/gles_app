@@ -228,11 +228,8 @@ static void ortho_matrix(
 }
 
 
-
-
-
-#define TERRAIN_WIDTH   100
-#define TERRAIN_HEIGHT  100
+#define TERRAIN_WIDTH   10
+#define TERRAIN_HEIGHT  10
 #define TERRAIN_DEPTH   1
 #define OCTAVE_COUNT    6
 #define PERSISTANCE     0.5f
@@ -389,11 +386,11 @@ static void perlinNoiseGenerate(
 typedef struct
 {
     std::vector<float>  vertex;
-    std::vector<float>  normal;
+//    std::vector<float>  normal;
 
 } sTERRIAN_STRUCT;
 
-std::deque<sTERRIAN_STRUCT> f_terrian;
+std::deque<sTERRIAN_STRUCT> f_terrain;
 
 GLuint vboCreate(
     const GLsizeiptr    size,
@@ -451,6 +448,192 @@ static void simplex_test(void)
             }
         }
     }
+}
+
+
+static void surface_add(
+    Vector3f           &v0,
+    Vector3f           &v1,
+    Vector3f           &v2,
+    Vector3f           &v3,
+    std::vector<float> &terrain
+    )
+{
+    auto x = v2 - v0;
+    auto y = v1 - v0;
+
+    auto crossProduct = x.cross(y);
+    auto normal = crossProduct.normalize();
+
+    // 0 2 1    0, 3, 2
+    terrain.push_back(v0[0]);
+    terrain.push_back(v0[1]);
+    terrain.push_back(v0[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v2[0]);
+    terrain.push_back(v2[1]);
+    terrain.push_back(v2[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v1[0]);
+    terrain.push_back(v1[1]);
+    terrain.push_back(v1[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    //            for(auto k = 0; k < 3; k++)
+        //            {
+        //                terrain.vertex.push_back(normal.x);
+    //                terrain.vertex.push_back(normal.y);
+    //                terrain.vertex.push_back(normal.z);
+    //            }
+
+    //            LOGE("### normal %f, %f, %f", normal.x, normal.y, normal.z);
+
+    x = v2 - v0;
+    y = v1 - v0;
+
+    crossProduct = x.cross(y);
+    normal = crossProduct.normalize();
+
+    terrain.push_back(v0[0]);
+    terrain.push_back(v0[1]);
+    terrain.push_back(v0[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v3[0]);
+    terrain.push_back(v3[1]);
+    terrain.push_back(v3[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v2[0]);
+    terrain.push_back(v2[1]);
+    terrain.push_back(v2[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    //            auto x = v2 - v0;
+    //            auto y = v1 - v0;
+    //
+    //            auto cross = {x[1]*y[2] - y[1]*x[2],
+        //                          x[2]*y[0] - y[2]*x[0],
+    //                          x[0]*y[1] - y[0]*x[1]};
+    //
+    //            auto normal = normalize(cross);
+
+
+
+    //            for(auto k = 0; k < 3; k++)
+    //            {
+    //                terrain.vertex.push_back(normal.x);
+    //                terrain.vertex.push_back(normal.y);
+    //                terrain.vertex.push_back(normal.z);
+    //            }
+}
+
+
+static void cube_add(
+    Vector3f           &pos,
+    std::vector<float> &terrain
+    )
+{
+    Vector3f v0, v1, v2, v3;
+
+
+    // top
+    v0 = Vector3f(pos.x,        pos.y + 1,  pos.z);
+    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
+    v2 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
+    v3 = Vector3f(pos.x,        pos.y + 1,  pos.z + 1);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // front
+    v0 = Vector3f(pos.x,        pos.y + 1,  pos.z + 1);
+    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
+    v2 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
+    v3 = Vector3f(pos.x,        pos.y,      pos.z + 1);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // right
+    v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
+    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
+    v2 = Vector3f(pos.x + 1,    pos.y,      pos.z);
+    v3 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
+    surface_add(v0, v1, v2, v3, terrain);
+
+//    // left
+//    v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
+//    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
+//    v2 = Vector3f(pos.x + 1,    pos.y,      pos.z);
+//    v3 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
+//    surface_add(v0, v1, v2, v3, terrain);
+
+
+}
+
+
+static void terrain_simplex_init(void)
+{
+    float density_cube[TERRAIN_WIDTH][TERRAIN_HEIGHT][TERRAIN_DEPTH] = {0};
+    float processed_cube[TERRAIN_WIDTH][TERRAIN_HEIGHT][TERRAIN_DEPTH] = {0};
+    struct osn_context *ctx;
+
+
+    // Initialize noise.
+//    open_simplex_noise(77374, &ctx);
+//
+//    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+//    {
+//        for(auto y = 0; y < TERRAIN_HEIGHT; y++)
+//        {
+//            for(auto z = 0; z < TERRAIN_HEIGHT; z++)
+//            {
+//                density_cube[x][y][z] = open_simplex_noise3(ctx, x, y, z);
+//            }
+//        }
+//    }
+//
+//    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+//    {
+//        for(auto y = 0; y < TERRAIN_HEIGHT; y++)
+//        {
+//            for(auto z = 0; z < TERRAIN_HEIGHT; z++)
+//            {
+//                if(density_cube[x][y][z] > 0)
+//                {
+//                    processed_cube[x][y][z] = (density_cube[x][y][z] > 0) ? 1 : 0;
+//                }
+//            }
+//        }
+//    }
+
+    Vector3f pos(0, 0, 0);
+
+    sTERRIAN_STRUCT terrain;
+
+    cube_add(pos, terrain.vertex);
+
+    f_terrain.push_back(terrain);
+
+    GLuint buffer = vboCreate(f_terrain[0].vertex.size()*4, &f_terrain[0].vertex[0], GL_STATIC_DRAW);
+    terrian_vbos.push_back(buffer);
 }
 
 
@@ -587,9 +770,9 @@ static void terrain_init(void)
 
 //    LOGE("#### terrian vertex count = %u", terrain.vertex.size());
 
-    f_terrian.push_back(terrain);
+    f_terrain.push_back(terrain);
 
-    GLuint buffer = vboCreate(f_terrian[0].vertex.size()*4, &f_terrian[0].vertex[0], GL_STATIC_DRAW);
+    GLuint buffer = vboCreate(f_terrain[0].vertex.size()*4, &f_terrain[0].vertex[0], GL_STATIC_DRAW);
     terrian_vbos.push_back(buffer);
 }
 
@@ -684,9 +867,11 @@ Renderer::Renderer(
     glDisable(GL_CULL_FACE);
 #endif
 
-    terrain_init();
+//    terrain_init();
 
-    simplex_test();
+//    simplex_test();
+
+    terrain_simplex_init();
 }
 
 
@@ -854,6 +1039,18 @@ void Renderer::draw(
     // Push color
     colorPush(ref, color);
 }
+
+//struct vec3
+//{
+//    float x;
+//    float y;
+//    float z;
+//
+//    vec3(float x, y, z)
+//        : x(x), y(y), z(z)
+//    {
+//    }
+//};
 
 typedef float vec3[3];
 typedef float vec4[4];
@@ -1053,7 +1250,7 @@ void terrain_draw(
     glUseProgram(texture_program->program);
     glUniformMatrix4fv(texture_program->u_mvp, 1, GL_FALSE, (GLfloat *) m);
     glUniform4f(texture_program->u_color, colors[colorIndex][0], colors[colorIndex][1], colors[colorIndex][2], 1);
-    glUniform3f(texture_program->u_light, 0, 1, 0);
+    glUniform3f(texture_program->u_light, 1, 1, 1);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexAttribPointer(texture_program->a_position,
@@ -1072,7 +1269,7 @@ void terrain_draw(
     glEnableVertexAttribArray(texture_program->a_position);
     glEnableVertexAttribArray(texture_program->a_normal);
 
-    glDrawArrays(GL_TRIANGLES, 0, f_terrian[0].vertex.size());
+    glDrawArrays(GL_TRIANGLES, 0, f_terrain[0].vertex.size());
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -1111,7 +1308,7 @@ void Renderer::render(
 
     mat4x4_look_at(view_matrix,
                    20.0f,
-                   30.0f,
+                   20.0f,
                    20.0f,
                    0.0f,
                    0.0f,
