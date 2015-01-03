@@ -9,6 +9,9 @@
 #include "Matrix.h"
 #include "open-simplex-noise.h"
 
+// Don't forget to change the vertex shader!
+#define NORMAL_SUPPORT
+
 
 typedef struct {
     GLuint program;
@@ -536,8 +539,8 @@ static void surface_add(
 static Vector3f eye(20.0f, 20.0f, 20.0f);
 static Vector3f light(1.0f, 1.0f, 1.0f);
 #else
-static Vector3f eye(-20.0f, -20.0f, -20.0f);
-static Vector3f light(-1.0f, -1.0f, -1.0f);
+static Vector3f eye(-20.0f, 20.0f, 20.0f);
+static Vector3f light(-1.0f, 1.0f, -1.0f);
 #endif
 
 static void cube_add(
@@ -574,21 +577,21 @@ static void cube_add(
     v1 = Vector3f(pos.x,    pos.y + 1,  pos.z + 1);
     v2 = Vector3f(pos.x,    pos.y,      pos.z + 1);
     v3 = Vector3f(pos.x,    pos.y,      pos.z);
-//    surface_add(v0, v1, v2, v3, terrain);
+    surface_add(v0, v1, v2, v3, terrain);
 
     // back
     v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
     v1 = Vector3f(pos.x,        pos.y + 1,  pos.z);
     v2 = Vector3f(pos.x,        pos.y,      pos.z);
     v3 = Vector3f(pos.x + 1,    pos.y,      pos.z);
-//    surface_add(v0, v1, v2, v3, terrain);
+    surface_add(v0, v1, v2, v3, terrain);
 
     // bottom
     v0 = Vector3f(pos.x,        pos.y,  pos.z + 1);
     v1 = Vector3f(pos.x + 1,    pos.y,  pos.z + 1);
     v2 = Vector3f(pos.x + 1,    pos.y,  pos.z);
     v3 = Vector3f(pos.x,        pos.y,  pos.z);
-//    surface_add(v0, v1, v2, v3, terrain);
+    surface_add(v0, v1, v2, v3, terrain);
 }
 
 
@@ -847,8 +850,10 @@ Renderer::Renderer(
     texture_program.a_position = glGetAttribLocation(texture_program.program, "a_Position");
     assert(texture_program.a_position != -1);
 
+#if defined(NORMAL_SUPPORT)
     texture_program.a_normal = glGetAttribLocation(texture_program.program, "a_Normal");
     assert(texture_program.a_normal != -1);
+#endif
 
     texture_program.u_mvp = glGetUniformLocation(texture_program.program, "u_MvpMatrix");
     assert(texture_program.u_mvp != -1);
@@ -856,8 +861,10 @@ Renderer::Renderer(
     texture_program.u_color = glGetUniformLocation(texture_program.program, "u_Color");
     assert(texture_program.u_color != -1);
 
+#if defined(NORMAL_SUPPORT)
     texture_program.u_light = glGetUniformLocation(texture_program.program, "u_VectorToLight");
     assert(texture_program.u_light != -1);
+#endif
 
     glEnable(GL_CULL_FACE);
 
@@ -1247,15 +1254,13 @@ void terrain_draw(
     };
     static unsigned int colorIndex = 0;
 
-//    if(buffer == 2)
-//    {
-//        colorIndex = 0;
-//    }
-
     glUseProgram(texture_program->program);
     glUniformMatrix4fv(texture_program->u_mvp, 1, GL_FALSE, (GLfloat *) m);
     glUniform4f(texture_program->u_color, colors[colorIndex][0], colors[colorIndex][1], colors[colorIndex][2], 1);
-    glUniform3f(texture_program->u_light, light.x, light.y, light.z);
+#if defined(NORMAL_SUPPORT)
+    Vector3f lightNorm = light.normalize();
+    glUniform3f(texture_program->u_light, lightNorm.x, lightNorm.y, lightNorm.z);
+#endif
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexAttribPointer(texture_program->a_position,
@@ -1265,14 +1270,18 @@ void terrain_draw(
                           sizeof(GL_FLOAT)*6,   // For every vertex (float * 3), there's a normal.
                                                 // therefore the stride is float * 3 * 2
                           (void *) 0);
+#if defined(NORMAL_SUPPORT)
     glVertexAttribPointer(texture_program->a_normal,
                           3,
                           GL_FLOAT,
                           GL_FALSE,
                           sizeof(GL_FLOAT)*6,
                           (void *) (sizeof(GL_FLOAT)*3));
+#endif
     glEnableVertexAttribArray(texture_program->a_position);
+#if defined(NORMAL_SUPPORT)
     glEnableVertexAttribArray(texture_program->a_normal);
+#endif
 
     glDrawArrays(GL_TRIANGLES, 0, f_terrain[0].vertex.size());
 
