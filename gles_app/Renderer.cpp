@@ -11,6 +11,8 @@
 
 // Don't forget to change the vertex shader!
 #define NORMAL_SUPPORT
+//#define LIGHT_SUPPORT
+//#define COLOR_SUPPORT
 
 
 typedef struct {
@@ -170,15 +172,17 @@ void process_shader(
     // Dump debug info (source and log) if compilation failed.
     if(iStatus != GL_TRUE)
     {
-#ifdef DEBUG
+#if 1
         GLint iLen;
         char *sDebugSource = NULL;
         char *sErrorLog = NULL;
 
+#define GL_CHECK(x) (void (x))
+
         /* Get shader source. */
         GL_CHECK(glGetShaderiv(*pShader, GL_SHADER_SOURCE_LENGTH, &iLen));
 
-        sDebugSource = malloc(iLen);
+        sDebugSource = (char *) malloc(iLen);
 
         GL_CHECK(glGetShaderSource(*pShader, iLen, NULL, sDebugSource));
         
@@ -188,7 +192,7 @@ void process_shader(
         /* Now get the info log. */
         GL_CHECK(glGetShaderiv(*pShader, GL_INFO_LOG_LENGTH, &iLen));
         
-        sErrorLog = malloc(iLen);
+        sErrorLog = (char *) malloc(iLen);
         
         GL_CHECK(glGetShaderInfoLog(*pShader, iLen, NULL, sErrorLog));
         
@@ -863,10 +867,12 @@ Renderer::Renderer(
     texture_program.u_mvp = glGetUniformLocation(texture_program.program, "u_MvpMatrix");
     assert(texture_program.u_mvp != -1);
 
+#if defined(COLOR_SUPPORT)
     texture_program.u_color = glGetUniformLocation(texture_program.program, "u_Color");
     assert(texture_program.u_color != -1);
+#endif
 
-#if defined(NORMAL_SUPPORT)
+#if defined(LIGHT_SUPPORT)
     texture_program.u_light = glGetUniformLocation(texture_program.program, "u_VectorToLight");
     assert(texture_program.u_light != -1);
 #endif
@@ -1263,8 +1269,10 @@ void terrain_draw(
 
     glUseProgram(texture_program->program);
     glUniformMatrix4fv(texture_program->u_mvp, 1, GL_FALSE, (GLfloat *) m);
+#if defined(COLOR_SUPPORT)
     glUniform4f(texture_program->u_color, colors[colorIndex][0], colors[colorIndex][1], colors[colorIndex][2], 1);
-#if defined(NORMAL_SUPPORT)
+#endif
+#if defined(LIGHT_SUPPORT)
     Vector3f lightNorm = light.normalize();
     glUniform3f(texture_program->u_light, lightNorm.x, lightNorm.y, lightNorm.z);
 #endif
