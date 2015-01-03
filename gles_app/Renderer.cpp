@@ -7,7 +7,10 @@
 #include "constants.hpp"
 #include "Renderer.h"
 #include "Matrix.h"
+#include "open-simplex-noise.h"
 
+// Don't forget to change the vertex shader!
+#define NORMAL_SUPPORT
 
 
 typedef struct {
@@ -228,11 +231,9 @@ static void ortho_matrix(
 }
 
 
-
-
-
-#define TERRAIN_WIDTH   100
-#define TERRAIN_HEIGHT  100
+#define TERRAIN_WIDTH   50
+#define TERRAIN_DEPTH   10
+#define TERRAIN_HEIGHT  50
 #define OCTAVE_COUNT    6
 #define PERSISTANCE     0.5f
 #define UNIT_LEN        2
@@ -249,12 +250,12 @@ float interpolate(
 
 
 static void printMap(
-    float   map[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    float   map[TERRAIN_WIDTH][TERRAIN_DEPTH]
     )
 {
     for(auto i = 0; i < TERRAIN_WIDTH; ++i)
     {
-        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        for(auto j = 0; j < TERRAIN_DEPTH; ++j)
         {
 //            LOGE("### map[%u][%u] = %f", i, j, map[i][j]);
         }
@@ -263,12 +264,12 @@ static void printMap(
 
 
 static void whiteNoiseGenerate(
-    float heightMap[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    float heightMap[TERRAIN_WIDTH][TERRAIN_DEPTH]
     )
 {
     for(auto i = 0; i < TERRAIN_WIDTH; ++i)
     {
-        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        for(auto j = 0; j < TERRAIN_DEPTH; ++j)
         {
             heightMap[i][j] = (double)rand() / (double)RAND_MAX ;
         }
@@ -280,9 +281,9 @@ static void whiteNoiseGenerate(
 
 
 static void smoothNoiseGenerate(
-    float   whiteNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT],
+    float   whiteNoise[TERRAIN_WIDTH][TERRAIN_DEPTH],
     int     octave,
-    float   smoothNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    float   smoothNoise[TERRAIN_WIDTH][TERRAIN_DEPTH]
     )
 {
     int samplePeriod = 1 << octave;
@@ -294,10 +295,10 @@ static void smoothNoiseGenerate(
         int sample_i1 = (sample_i0 + samplePeriod) % TERRAIN_WIDTH;
         float horizontal_blend = (i - sample_i0) * sampleFrequency;
 
-        for(int j = 0; j < TERRAIN_HEIGHT; ++j)
+        for(int j = 0; j < TERRAIN_DEPTH; ++j)
         {
             int sample_j0 = (j / samplePeriod) * samplePeriod;
-            int sample_j1 = (sample_j0 + samplePeriod) % TERRAIN_HEIGHT;
+            int sample_j1 = (sample_j0 + samplePeriod) % TERRAIN_DEPTH;
             float vertical_blend = (j - sample_j0) * sampleFrequency;
 
             float top = interpolate(
@@ -320,12 +321,12 @@ static void smoothNoiseGenerate(
 
 
 static void perlinNoiseGenerate(
-    float   perlinNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT]
+    float   perlinNoise[TERRAIN_WIDTH][TERRAIN_DEPTH]
     )
 {
     float persistance = PERSISTANCE;
-    float smoothNoiseMap[OCTAVE_COUNT][TERRAIN_WIDTH][TERRAIN_HEIGHT];
-    float baseNoise[TERRAIN_WIDTH][TERRAIN_HEIGHT];
+    float smoothNoiseMap[OCTAVE_COUNT][TERRAIN_WIDTH][TERRAIN_DEPTH];
+    float baseNoise[TERRAIN_WIDTH][TERRAIN_DEPTH];
 
     // Generate base noise.
     whiteNoiseGenerate(baseNoise);
@@ -342,7 +343,7 @@ static void perlinNoiseGenerate(
         }
     }
 
-    memset(perlinNoise, 0, sizeof(float)*TERRAIN_WIDTH*TERRAIN_HEIGHT);
+    memset(perlinNoise, 0, sizeof(float)*TERRAIN_WIDTH*TERRAIN_DEPTH);
 
     float amplitude         = 1.0f;
     float totalAmplitude    = 0.0f;
@@ -354,7 +355,7 @@ static void perlinNoiseGenerate(
 
         for(auto i = 0; i < TERRAIN_WIDTH; ++i)
         {
-            for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+            for(auto j = 0; j < TERRAIN_DEPTH; ++j)
             {
                 perlinNoise[i][j] += smoothNoiseMap[octave][i][j] * amplitude;
             }
@@ -366,7 +367,7 @@ static void perlinNoiseGenerate(
 
     for(auto i = 0; i < TERRAIN_WIDTH; ++i)
     {
-        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        for(auto j = 0; j < TERRAIN_DEPTH; ++j)
         {
             perlinNoise[i][j] /= totalAmplitude;
         }
@@ -388,11 +389,11 @@ static void perlinNoiseGenerate(
 typedef struct
 {
     std::vector<float>  vertex;
-    std::vector<float>  normal;
+//    std::vector<float>  normal;
 
 } sTERRIAN_STRUCT;
 
-std::deque<sTERRIAN_STRUCT> f_terrian;
+std::deque<sTERRIAN_STRUCT> f_terrain;
 
 GLuint vboCreate(
     const GLsizeiptr    size,
@@ -415,15 +416,247 @@ GLuint vboCreate(
 }
 
 
+
+static void simplex_test(void)
+{
+    float density_cube[TERRAIN_WIDTH][TERRAIN_DEPTH][TERRAIN_HEIGHT] = {0};
+    float processed_cube[TERRAIN_WIDTH][TERRAIN_DEPTH][TERRAIN_HEIGHT] = {0};
+    struct osn_context *ctx;
+
+
+    // Initialize noise.
+    open_simplex_noise(77374, &ctx);
+
+    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+    {
+        for(auto y = 0; y < TERRAIN_DEPTH; y++)
+        {
+            for(auto z = 0; z < TERRAIN_DEPTH; z++)
+            {
+                density_cube[x][y][z] = open_simplex_noise3(ctx, x, y, z);
+            }
+        }
+    }
+
+    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+    {
+        for(auto y = 0; y < TERRAIN_DEPTH; y++)
+        {
+            for(auto z = 0; z < TERRAIN_DEPTH; z++)
+            {
+                if(density_cube[x][y][z] > 0)
+                {
+                    processed_cube[x][y][z] = (density_cube[x][y][z] > 0) ? 1 : 0;
+                }
+            }
+        }
+    }
+}
+
+
+static void surface_add(
+    Vector3f           &v0,
+    Vector3f           &v1,
+    Vector3f           &v2,
+    Vector3f           &v3,
+    std::vector<float> &terrain
+    )
+{
+    auto x = v2 - v0;
+    auto y = v1 - v0;
+
+    auto crossProduct = x.cross(y);
+    auto normal = crossProduct.normalize();
+
+//    v0 = (v0 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v0;
+//    v1 = (v1 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v1;
+//    v2 = (v2 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v2;
+//    v3 = (v3 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v3;
+
+    // 0 2 1    0 3 2
+
+#define TRIANGLE_1
+#define TRIANGLE_2
+
+    // 0 2 1 
+#if defined(TRIANGLE_1)
+    terrain.push_back(v0[0]);
+    terrain.push_back(v0[1]);
+    terrain.push_back(v0[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v2[0]);
+    terrain.push_back(v2[1]);
+    terrain.push_back(v2[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v1[0]);
+    terrain.push_back(v1[1]);
+    terrain.push_back(v1[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+#endif
+
+    // 0 3 2
+    x = v2 - v0;
+    y = v1 - v0;
+
+    crossProduct = x.cross(y);
+    normal = crossProduct.normalize();
+
+#if defined(TRIANGLE_2)
+    terrain.push_back(v0[0]);
+    terrain.push_back(v0[1]);
+    terrain.push_back(v0[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v3[0]);
+    terrain.push_back(v3[1]);
+    terrain.push_back(v3[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+
+    terrain.push_back(v2[0]);
+    terrain.push_back(v2[1]);
+    terrain.push_back(v2[2]);
+
+    terrain.push_back(normal.x);
+    terrain.push_back(normal.y);
+    terrain.push_back(normal.z);
+#endif
+}
+
+
+#if 1
+static Vector3f eye(100.0f, 50.0f, 100.0f);
+static Vector3f light(1.0f, 1.0f, 1.0f);
+#else
+static Vector3f eye(-20.0f, 20.0f, -20.0f);
+static Vector3f light(-1.0f, 1.0f, -1.0f);
+#endif
+
+static void cube_add(
+    Vector3f           &pos,
+    std::vector<float> &terrain
+    )
+{
+    Vector3f v0, v1, v2, v3;
+
+
+    // top
+    v0 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v3 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // front
+    v0 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z + 0.5f);
+    v3 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,   pos.z + 0.5f);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // right
+    v0 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z- 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z- 0.5f);
+    v3 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z + 0.5f);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // left
+    v0 = Vector3f(pos.x- 0.5f,  pos.y + 0.5f,   pos.z - 0.5f);
+    v1 = Vector3f(pos.x- 0.5f,  pos.y + 0.5f,   pos.z + 0.5f);
+    v2 = Vector3f(pos.x- 0.5f,  pos.y - 0.5f,   pos.z + 0.5f);
+    v3 = Vector3f(pos.x- 0.5f,  pos.y - 0.5f,   pos.z - 0.5f);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // back
+    v0 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v1 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v2 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,   pos.z - 0.5f);
+    v3 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z - 0.5f);
+    surface_add(v0, v1, v2, v3, terrain);
+
+    // bottom
+    v0 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,  pos.z + 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,  pos.z + 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,  pos.z - 0.5f);
+    v3 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,  pos.z - 0.5f);
+    surface_add(v0, v1, v2, v3, terrain);
+}
+
+
+static void terrain_simplex_init(void)
+{
+    float density_cube[TERRAIN_WIDTH][TERRAIN_DEPTH][TERRAIN_HEIGHT] = {0};
+    float processed_cube[TERRAIN_WIDTH][TERRAIN_DEPTH][TERRAIN_HEIGHT] = {0};
+    struct osn_context *ctx;
+
+
+    // Initialize noise.
+    open_simplex_noise(77374, &ctx);
+
+    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+    {
+        for(auto y = 0; y < TERRAIN_DEPTH; y++)
+        {
+            for(auto z = 0; z < TERRAIN_HEIGHT; z++)
+            {
+                density_cube[x][y][z] = open_simplex_noise3(ctx, x, y, z);
+            }
+        }
+    }
+
+    sTERRIAN_STRUCT terrain;
+
+    for(auto x = 0; x < TERRAIN_WIDTH; x++)
+    {
+        for(auto y = 0; y < TERRAIN_DEPTH; y++)
+        {
+            for(auto z = 0; z < TERRAIN_HEIGHT; z++)
+            {
+                if(density_cube[x][y][z] > 0)
+                {
+                    Vector3f pos(x, y, z);
+                    cube_add(pos, terrain.vertex);
+                }
+            }
+        }
+    }
+
+//    cube_add(pos2, terrain.vertex);
+//    cube_add(pos3, terrain.vertex);
+
+    f_terrain.push_back(terrain);
+
+    GLuint buffer = vboCreate(f_terrain[0].vertex.size()*4, &f_terrain[0].vertex[0], GL_STATIC_DRAW);
+    terrian_vbos.push_back(buffer);
+}
+
+
 static void terrain_init(void)
 {
-    float height_map[TERRAIN_WIDTH][TERRAIN_HEIGHT] = {0};
+    float height_map[TERRAIN_WIDTH][TERRAIN_DEPTH] = {0};
 
     perlinNoiseGenerate(height_map);
 
     for(auto i = 0; i < TERRAIN_WIDTH; ++i)
     {
-        for(auto j = 0; j < TERRAIN_HEIGHT; ++j)
+        for(auto j = 0; j < TERRAIN_DEPTH; ++j)
         {
             height_map[i][j] *= 20;
         }
@@ -438,7 +671,7 @@ static void terrain_init(void)
 
     for(auto i = 0; i < TERRAIN_WIDTH - 1; ++i)
     {
-        for(auto j = 0; j < TERRAIN_HEIGHT - 1; ++j)
+        for(auto j = 0; j < TERRAIN_DEPTH - 1; ++j)
         {
             Vector3f v0((float)(i * UNIT_LEN),
                        height_map[i][j],
@@ -548,9 +781,9 @@ static void terrain_init(void)
 
 //    LOGE("#### terrian vertex count = %u", terrain.vertex.size());
 
-    f_terrian.push_back(terrain);
+    f_terrain.push_back(terrain);
 
-    GLuint buffer = vboCreate(f_terrian[0].vertex.size()*4, &f_terrian[0].vertex[0], GL_STATIC_DRAW);
+    GLuint buffer = vboCreate(f_terrain[0].vertex.size()*4, &f_terrain[0].vertex[0], GL_STATIC_DRAW);
     terrian_vbos.push_back(buffer);
 }
 
@@ -622,8 +855,10 @@ Renderer::Renderer(
     texture_program.a_position = glGetAttribLocation(texture_program.program, "a_Position");
     assert(texture_program.a_position != -1);
 
+#if defined(NORMAL_SUPPORT)
     texture_program.a_normal = glGetAttribLocation(texture_program.program, "a_Normal");
     assert(texture_program.a_normal != -1);
+#endif
 
     texture_program.u_mvp = glGetUniformLocation(texture_program.program, "u_MvpMatrix");
     assert(texture_program.u_mvp != -1);
@@ -631,8 +866,14 @@ Renderer::Renderer(
     texture_program.u_color = glGetUniformLocation(texture_program.program, "u_Color");
     assert(texture_program.u_color != -1);
 
+#if defined(NORMAL_SUPPORT)
     texture_program.u_light = glGetUniformLocation(texture_program.program, "u_VectorToLight");
     assert(texture_program.u_light != -1);
+#endif
+
+    glEnable(GL_CULL_FACE);
+
+//    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 #if 0
     glEnable(GL_BLEND);
@@ -645,7 +886,11 @@ Renderer::Renderer(
     glDisable(GL_CULL_FACE);
 #endif
 
-    terrain_init();
+//    terrain_init();
+
+//    simplex_test();
+
+    terrain_simplex_init();
 }
 
 
@@ -813,6 +1058,18 @@ void Renderer::draw(
     // Push color
     colorPush(ref, color);
 }
+
+//struct vec3
+//{
+//    float x;
+//    float y;
+//    float z;
+//
+//    vec3(float x, y, z)
+//        : x(x), y(y), z(z)
+//    {
+//    }
+//};
 
 typedef float vec3[3];
 typedef float vec4[4];
@@ -1004,15 +1261,13 @@ void terrain_draw(
     };
     static unsigned int colorIndex = 0;
 
-//    if(buffer == 2)
-//    {
-//        colorIndex = 0;
-//    }
-
     glUseProgram(texture_program->program);
     glUniformMatrix4fv(texture_program->u_mvp, 1, GL_FALSE, (GLfloat *) m);
     glUniform4f(texture_program->u_color, colors[colorIndex][0], colors[colorIndex][1], colors[colorIndex][2], 1);
-    glUniform3f(texture_program->u_light, 0, 1, 0);
+#if defined(NORMAL_SUPPORT)
+    Vector3f lightNorm = light.normalize();
+    glUniform3f(texture_program->u_light, lightNorm.x, lightNorm.y, lightNorm.z);
+#endif
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexAttribPointer(texture_program->a_position,
@@ -1022,16 +1277,20 @@ void terrain_draw(
                           sizeof(GL_FLOAT)*6,   // For every vertex (float * 3), there's a normal.
                                                 // therefore the stride is float * 3 * 2
                           (void *) 0);
+#if defined(NORMAL_SUPPORT)
     glVertexAttribPointer(texture_program->a_normal,
                           3,
                           GL_FLOAT,
                           GL_FALSE,
                           sizeof(GL_FLOAT)*6,
                           (void *) (sizeof(GL_FLOAT)*3));
+#endif
     glEnableVertexAttribArray(texture_program->a_position);
+#if defined(NORMAL_SUPPORT)
     glEnableVertexAttribArray(texture_program->a_normal);
+#endif
 
-    glDrawArrays(GL_TRIANGLES, 0, f_terrian[0].vertex.size());
+    glDrawArrays(GL_TRIANGLES, 0, f_terrain[0].vertex.size());
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -1056,7 +1315,7 @@ void Renderer::render(
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set active texture unit.
-    glActiveTexture(GL_TEXTURE0);
+//    glActiveTexture(GL_TEXTURE0);
 
     glViewport(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
 
@@ -1069,9 +1328,9 @@ void Renderer::render(
 //    Vector2f pos = Player::getInstance()->getPosition();
 
     mat4x4_look_at(view_matrix,
-                   20.0f,
-                   30.0f,
-                   20.0f,
+                   eye.x,
+                   eye.y,
+                   eye.z,
                    0.0f,
                    0.0f,
                    0.0f,
