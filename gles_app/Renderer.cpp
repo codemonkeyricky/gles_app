@@ -468,6 +468,11 @@ static void surface_add(
     auto crossProduct = x.cross(y);
     auto normal = crossProduct.normalize();
 
+//    v0 = (v0 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v0;
+//    v1 = (v1 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v1;
+//    v2 = (v2 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v2;
+//    v3 = (v3 == Vector3f(0, 0, 0)) ? Vector3f(0.1f, 0.1f, 0.1f) : v3;
+
     // 0 2 1    0 3 2
 
 #define TRIANGLE_1
@@ -539,7 +544,7 @@ static void surface_add(
 static Vector3f eye(20.0f, 20.0f, 20.0f);
 static Vector3f light(1.0f, 1.0f, 1.0f);
 #else
-static Vector3f eye(-20.0f, 20.0f, 20.0f);
+static Vector3f eye(-20.0f, 20.0f, -20.0f);
 static Vector3f light(-1.0f, 1.0f, -1.0f);
 #endif
 
@@ -552,45 +557,45 @@ static void cube_add(
 
 
     // top
-    v0 = Vector3f(pos.x,        pos.y + 1,  pos.z);
-    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
-    v2 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
-    v3 = Vector3f(pos.x,        pos.y + 1,  pos.z + 1);
+    v0 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v3 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
     surface_add(v0, v1, v2, v3, terrain);
 
     // front
-    v0 = Vector3f(pos.x,        pos.y + 1,  pos.z + 1);
-    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
-    v2 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
-    v3 = Vector3f(pos.x,        pos.y,      pos.z + 1);
+    v0 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z + 0.5f);
+    v3 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,   pos.z + 0.5f);
     surface_add(v0, v1, v2, v3, terrain);
 
     // right
-    v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z + 1);
-    v1 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
-    v2 = Vector3f(pos.x + 1,    pos.y,      pos.z);
-    v3 = Vector3f(pos.x + 1,    pos.y,      pos.z + 1);
+    v0 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z + 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z- 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z- 0.5f);
+    v3 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z + 0.5f);
     surface_add(v0, v1, v2, v3, terrain);
 
     // left
-    v0 = Vector3f(pos.x,    pos.y + 1,  pos.z);
-    v1 = Vector3f(pos.x,    pos.y + 1,  pos.z + 1);
-    v2 = Vector3f(pos.x,    pos.y,      pos.z + 1);
-    v3 = Vector3f(pos.x,    pos.y,      pos.z);
+    v0 = Vector3f(pos.x- 0.5f,  pos.y + 0.5f,   pos.z - 0.5f);
+    v1 = Vector3f(pos.x- 0.5f,  pos.y + 0.5f,   pos.z + 0.5f);
+    v2 = Vector3f(pos.x- 0.5f,  pos.y - 0.5f,   pos.z + 0.5f);
+    v3 = Vector3f(pos.x- 0.5f,  pos.y - 0.5f,   pos.z - 0.5f);
     surface_add(v0, v1, v2, v3, terrain);
 
     // back
-    v0 = Vector3f(pos.x + 1,    pos.y + 1,  pos.z);
-    v1 = Vector3f(pos.x,        pos.y + 1,  pos.z);
-    v2 = Vector3f(pos.x,        pos.y,      pos.z);
-    v3 = Vector3f(pos.x + 1,    pos.y,      pos.z);
+    v0 = Vector3f(pos.x + 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v1 = Vector3f(pos.x - 0.5f, pos.y + 0.5f,   pos.z - 0.5f);
+    v2 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,   pos.z - 0.5f);
+    v3 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,   pos.z - 0.5f);
     surface_add(v0, v1, v2, v3, terrain);
 
     // bottom
-    v0 = Vector3f(pos.x,        pos.y,  pos.z + 1);
-    v1 = Vector3f(pos.x + 1,    pos.y,  pos.z + 1);
-    v2 = Vector3f(pos.x + 1,    pos.y,  pos.z);
-    v3 = Vector3f(pos.x,        pos.y,  pos.z);
+    v0 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,  pos.z + 0.5f);
+    v1 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,  pos.z + 0.5f);
+    v2 = Vector3f(pos.x + 0.5f, pos.y - 0.5f,  pos.z - 0.5f);
+    v3 = Vector3f(pos.x - 0.5f, pos.y - 0.5f,  pos.z - 0.5f);
     surface_add(v0, v1, v2, v3, terrain);
 }
 
